@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,11 +21,19 @@
 <div class="relative flex max-w-4xl w-full mx-4 rounded-3xl overflow-hidden shadow-2xl bg-white">
     <!-- Contenedor del formulario de login -->
     <div class="w-full lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">INICIAR SESIÓN</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2" >INICIAR SESIÓN</h1>
         <p class="text-gray-600 text-sm mb-8">Ingresa para solicitar o brindar servicios técnicos fácilmente</p>
 
-        <!-- Formulario de login -->
-        <form id="loginForm" action="/index" method="post" class="space-y-6">
+        <!-- Mensajes de Spring Security (Errores/Logout) -->
+        <div th:if="${param.error}" class="p-3 mb-4 text-sm font-medium text-red-800 bg-red-100 rounded-lg shadow-md">
+            Credenciales inválidas. Por favor, inténtalo de nuevo.
+        </div>
+        <div th:if="${param.logout}" class="p-3 mb-4 text-sm font-medium text-green-800 bg-green-100 rounded-lg shadow-md">
+            Has cerrado sesión exitosamente.
+        </div>
+
+        <!-- Formulario de login - ACTION por defecto de Spring Security es /login -->
+        <form id="loginForm" th:action="@{/login}" method="post" class="space-y-6">
             <!-- Nombre de usuario -->
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -33,7 +41,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </div>
-                <input type="text" placeholder="Nombre de usuario" class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <!-- IMPORTANTE: El 'name' debe ser 'username' para Spring Security por defecto -->
+                <input type="text" name="username" id="username" placeholder="Nombre de usuario" class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
 
             <!-- Contraseña -->
@@ -44,7 +53,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 15v2a3 3 0 01-3 3H9a3 3 0 01-3-3v-2" />
                     </svg>
                 </div>
-                <input type="password" placeholder="Contraseña" class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <!-- IMPORTANTE: El 'name' debe ser 'password' para Spring Security por defecto -->
+                <input type="password" name="password" id="password" placeholder="Contraseña" class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
 
             <!-- Botón de Iniciar Sesión -->
@@ -57,7 +67,7 @@
         <!-- Separador o "Registrate" -->
         <div class="text-center mt-6 text-sm">
             <span class="text-gray-500">¿No tienes cuenta?</span>
-            <a href="/register" class="text-blue-600 font-semibold hover:underline">Regístrate</a>
+            <a th:href="@{/register}" class="text-blue-600 font-semibold hover:underline">Regístrate</a>
         </div>
 
         <!-- Separador social -->
@@ -69,6 +79,7 @@
 
         <!-- Botones de redes sociales -->
         <div class="space-y-4">
+            <!-- Botón de Google (SVG) -->
             <button class="flex items-center justify-center w-full py-3 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
                 <svg class="h-5 w-5 mr-3" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M44.5 20H24V28.8H35.4C34.7 32.7 31.9 35.8 28.2 37.8L35 43.4C40 38.6 43.1 31.6 44.5 24.3V20Z" fill="#4285F4"/>
@@ -78,7 +89,9 @@
                 </svg>
                 <span class="text-gray-700 font-semibold">Inicio sesión con Google</span>
             </button>
+            <!-- Botón de Facebook -->
             <button class="flex items-center justify-center w-full py-3 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors">
+                <!-- Usando th:src para referenciar imágenes estáticas -->
                 <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook Logo" class="h-5 w-5 mr-3">
                 <span class="text-gray-700 font-semibold">Inicio sesión con Facebook</span>
             </button>
@@ -86,18 +99,19 @@
     </div>
 
     <!-- Contenedor de la imagen/caja de la derecha -->
-    <div class="hidden lg:flex w-1/2 relative bg-purple-600 bg-opacity-70 backdrop-blur-md items-center justify-center p-8 rounded-3xl" style="background-image: url('images/login-background.svg'); background-size: cover; background-position: center;">
+    <div class="hidden lg:flex w-1/2 relative bg-purple-600 bg-opacity-70 backdrop-blur-md items-center justify-center p-8 rounded-3xl" style="background-image: url('/images/login-background.svg'); background-size: cover; background-position: center;">
         <div class="relative z-10 text-white text-center p-8 rounded-3xl backdrop-blur-xl bg-white bg-opacity-10">
             <h2 class="text-3xl font-bold mb-4">¡Inicia sesión y recibe la ayuda que necesitas en casa!</h2>
             <div class="w-full relative">
-                <!-- Placeholder para la imagen del técnico, usando un SVG genérico o una imagen de un técnico sonriendo -->
-                <img src="/images/logo.png" alt="Imagen de un técnico sonriendo" class="w-full h-auto rounded-xl">
+                <!-- Usando th:src para referenciar imágenes estáticas -->
+                <img th:src="@{/images/logo.png}" alt="Imagen de un técnico sonriendo" class="w-full h-auto rounded-xl">
             </div>
         </div>
 
     </div>
 
 </div>
-<script src="/js/loginScript.js"></script>
+<!-- Usando th:src para referenciar archivos JS estáticos -->
+<script th:src="@{/js/loginScript.js}"></script>
 </body>
 </html>
