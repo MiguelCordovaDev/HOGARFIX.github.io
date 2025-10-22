@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Técnicos Disponibles - HogarFix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --primary: #030213;
+      --radius: 0.625rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: var(--radius);
+      transition: 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .card {
+      background-color: white;
+      border: 1px solid #e5e7eb;
+      border-radius: var(--radius);
+      padding: 1rem;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="w-full bg-white border-b sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <h2 class="text-2xl font-medium text-primary">HogarFix</h2>
+
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav flex items-center space-x-8">
+        <a th:href="@{/}+''" class="hover:text-primary transition-colors">Inicio</a>
+        <a th:href="@{/}+'#nosotros'" class="hover:text-primary transition-colors">Nosotros</a>
+        <a th:href="@{/}+'#servicios'" class="hover:text-primary transition-colors">Servicios</a>
+        <a th:href="@{/}+'#testimonios'" class="hover:text-primary transition-colors">Testimonios</a>
+
+        <a th:href="@{/}+'#contacto'" class="hover:text-primary transition-colors">Contacto</a>
+      </nav>
+
+      <div class="desktop-nav flex items-center space-x-4">
+        <a th:href="@{/login}" class="btn-primary">Iniciar Sesion</a>
+      </div>
+
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+        <i data-lucide="menu" class="w-6 h-6" id="menu-icon"></i>
+        <i data-lucide="x" class="w-6 h-6 hidden" id="close-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+
+    <!-- Panel de Filtros -->
+    <aside class="space-y-6">
+      <h3 class="text-lg font-semibold mb-4">Filtrar Técnicos</h3>
+
+      <!-- Especialidad -->
+      <div>
+        <h4 class="font-medium mb-2">Especialidad</h4>
+        <ul class="space-y-2 text-sm">
+          <li><input type="checkbox" class="filter" value="plomeria"> Plomería</li>
+          <li><input type="checkbox" class="filter" value="Electricista"> Electricista</li>
+          <li><input type="checkbox" class="filter" value="Carpinteria"> Carpinteria</li>
+          <li><input type="checkbox" class="filter" value="electrodomesticos"> Electrodomésticos</li>
+        </ul>
+      </div>
+
+      <!-- Ubicación -->
+      <div>
+        <h4 class="font-medium mb-2">Ubicación</h4>
+        <select id="ubicacion" class="w-full border rounded-lg p-2 text-sm">
+          <option value="">Todas</option>
+          <option value="lima">Lima</option>
+          <option value="ate">Ate</option>
+          <option value="miraflores">Miraflores</option>
+          <option value="callao">Callao</option>
+        </select>
+      </div>
+
+      <!-- Calificación -->
+      <div>
+        <h4 class="font-medium mb-2">Calificación mínima</h4>
+        <select id="calificacion" class="w-full border rounded-lg p-2 text-sm">
+          <option value="0">Todas</option>
+          <option value="3">3 estrellas o más</option>
+          <option value="4">4 estrellas o más</option>
+          <option value="5">5 estrellas</option>
+        </select>
+      </div>
+
+      <button id="aplicar" class="btn-primary w-full mt-4">Aplicar Filtros</button>
+    </aside>
+
+    <!-- Tarjetas -->
+    <section class="md:col-span-3">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Técnicos Disponibles</h2>
+      </div>
+
+      <div id="lista-tecnicos" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Las tarjetas se insertan con JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="contacto" class="bg-gray-50 border-t" style="border-color: var(--border);">
+    <div class="container mx-auto px-4 py-16">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Company Info -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-medium">HogarFix</h3>
+          <p class="text-muted-foreground">
+            HogarFix conecta personas con técnicos profesionales de confianza.
+            Soluciones para el hogar con rapidez, calidad y seguridad.
+          </p>
+          <div class="flex space-x-3">
+            <button class="btn-outline p-2">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-outline p-2">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </button>
+            <button class="btn-outline p-2">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="space-y-4">
+          <h4 class="font-medium">Nuestros Servicios</h4>
+          <ul class="space-y-2 text-muted-foreground">
+            <li><a href="#servicios" class="hover:text-primary transition-colors">Plomería</a></li>
+            <li><a href="#servicios" class="hover:text-primary transition-colors">Electricista</a></li>
+            <li><a href="#servicios" class="hover:text-primary transition-colors">Reparación de Electrodomésticos</a>
+            </li>
+            <li><a href="#servicios" class="hover:text-primary transition-colors">Instalaciones A/C</a></li>
+            <li><a href="#servicios" class="hover:text-primary transition-colors">Mantenimiento General</a></li>
+            <li><a href="#servicios" class="hover:text-primary transition-colors">Emergencias 24/7</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="space-y-4">
+          <h4 class="font-medium">Información de Contacto</h4>
+          <div class="space-y-3 text-muted-foreground">
+            <div class="flex items-start gap-3">
+              <i data-lucide="phone" class="w-5 h-5 text-primary flex-shrink-0 mt-0.5"></i>
+              <div>
+                <a href="tel:+51968459279" class="hover:text-primary transition-colors">
+                  +51 968 459 279
+                </a>
+                <p class="text-sm">WhatsApp disponible</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <i data-lucide="mail" class="w-5 h-5 text-primary flex-shrink-0 mt-0.5"></i>
+              <a href="mailto:info@hogarfix.com" class="hover:text-primary transition-colors">
+                info@hogarfix.com
+              </a>
+            </div>
+            <div class="flex items-start gap-3">
+              <i data-lucide="map-pin" class="w-5 h-5 text-primary flex-shrink-0 mt-0.5"></i>
+              <span>Lima, Perú</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <i data-lucide="clock" class="w-5 h-5 text-primary flex-shrink-0 mt-0.5"></i>
+              <div>
+                <p>Lun - Vie: 8:00 AM - 6:00 PM</p>
+                <p class="text-sm">Sáb: 9:00 AM - 2:00 PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Contact -->
+        <div class="space-y-4">
+          <h4 class="font-medium">Consulta Rápida</h4>
+          <p class="text-muted-foreground">
+            ¿Necesitas un técnico? Escríbenos y te conectaremos con el profesional ideal.
+          </p>
+          <div class="space-y-3">
+            <input type="text" placeholder="Tu nombre" class="w-full p-3 border rounded-lg"
+              style="border-color: var(--border);">
+            <input type="email" placeholder="Tu email" class="w-full p-3 border rounded-lg"
+              style="border-color: var(--border);">
+            <input type="text" placeholder="¿En qué te podemos ayudar?" class="w-full p-3 border rounded-lg"
+              style="border-color: var(--border);">
+            <button class="btn-primary w-full">Solicitar Servicio</button>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <p class="text-sm text-primary font-medium">
+              🔧 ¡Evaluación gratuita disponible!
+            </p>
+            <p class="text-sm text-muted-foreground">
+              Primera consulta sin costo
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t mt-12 pt-8" style="border-color: var(--border);">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p class="text-muted-foreground text-center md:text-left">
+            &copy; 2025 HogarFix. Todos los derechos reservados.
+          </p>
+          <div class="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <a href="#" class="hover:text-primary transition-colors">Política de Privacidad</a>
+            <a href="#" class="hover:text-primary transition-colors">Términos y Condiciones</a>
+            <a href="#" class="hover:text-primary transition-colors">Preguntas Frecuentes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    const tecnicos = [
+      {
+        nombre: "Luis Gómez",
+        especialidad: "plomeria",
+        ubicacion: "ate",
+        calificacion: 4.5,
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpCDRlL9nJeRThTWlCsMY_Q59tCcoveSegvw&s"
+      },
+      {
+        nombre: "Carla Ramos",
+        especialidad: "Electricista",
+        ubicacion: "miraflores",
+        calificacion: 5,
+        img: "https://www.casadelamujer.org.uy/wp-content/uploads/2018/11/electri_2.jpg"
+      },
+      {
+        nombre: "Jorge Ramírez",
+        especialidad: "electrodomesticos",
+        ubicacion: "lima",
+        calificacion: 4,
+        img: "https://st3.depositphotos.com/1189140/18915/i/450/depositphotos_189152004-stock-photo-working-man-plumber-repairs-washing.jpg"
+      },
+      {
+        nombre: "Ana Torres",
+        especialidad: "Carpinteria",
+        ubicacion: "callao",
+        calificacion: 3.5,
+        img: "https://cimacnoticias.com.mx/wp-content/uploads/2016/05/carpintera01citlallilopez.jpg"
+      }
+    ];
+
+    const lista = document.getElementById("lista-tecnicos");
+
+    function mostrarTecnicos(filtrados) {
+      lista.innerHTML = "";
+      if (filtrados.length === 0) {
+        lista.innerHTML = `<p class="text-gray-500 col-span-full text-center">No se encontraron técnicos con esos filtros.</p>`;
+        return;
+      }
+      filtrados.forEach(t => {
+        const estrellas = "⭐".repeat(Math.round(t.calificacion));
+        lista.innerHTML += `
+          <div class="card text-center">
+            <img src="${t.img}" alt="${t.nombre}" class="w-32 h-32 rounded-full mx-auto object-cover mb-4">
+            <h3 class="text-lg font-semibold">${t.nombre}</h3>
+            <p class="text-gray-500 text-sm mb-1">${capitalizar(t.especialidad)}</p>
+            <p class="text-gray-500 text-sm mb-1">Ubicación: ${capitalizar(t.ubicacion)}</p>
+            <p class="text-yellow-500 mb-3">${estrellas} (${t.calificacion.toFixed(1)})</p>
+            <button class="btn-primary w-full">Contactar</button>
+          </div>
+        `;
+      });
+    }
+
+    function capitalizar(texto) {
+      return texto.charAt(0).toUpperCase() + texto.slice(1);
+    }
+
+    function aplicarFiltros() {
+      const especialidades = [...document.querySelectorAll(".filter:checked")].map(e => e.value);
+      const ubicacion = document.getElementById("ubicacion").value;
+      const calificacionMin = parseFloat(document.getElementById("calificacion").value);
+
+      const filtrados = tecnicos.filter(t => {
+        const coincideEspecialidad = especialidades.length === 0 || especialidades.includes(t.especialidad);
+        const coincideUbicacion = ubicacion === "" || t.ubicacion === ubicacion;
+        const coincideCalificacion = t.calificacion >= calificacionMin;
+        return coincideEspecialidad && coincideUbicacion && coincideCalificacion;
+      });
+
+      mostrarTecnicos(filtrados);
+    }
+
+    document.querySelectorAll('a[href="#contacto"]').forEach(enlace => {
+      enlace.addEventListener('click', function (e) {
+        e.preventDefault(); // Evita el salto brusco
+        const seccion = document.querySelector('#contacto');
+        if (seccion) {
+          seccion.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+    document.getElementById("aplicar").addEventListener("click", aplicarFiltros);
+    mostrarTecnicos(tecnicos); // Mostrar todos al inicio
+  </script>
+</body>
+
+</html>

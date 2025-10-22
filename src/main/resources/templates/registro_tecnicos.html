@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Cliente - HogarFix</title>
+    <title>Registro de Trabajadores - HogarFix</title>
     <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,11 +17,11 @@
 <body class="min-h-screen flex items-center justify-center bg-gray-100">
 
     <div class="w-full max-w-lg bg-white p-8 rounded-xl shadow-2xl border border-gray-200">
-    <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6">Únete a Hogarfix</h2>
+    <h2 class="text-3xl font-bold text-center text-indigo-700 mb-6">Trabaja con Hogarfix</h2>
     <p class="text-center text-gray-600 mb-8">Encuentra a los mejores especialistas para tu hogar.</p>
 
     
-    <form th:action="@{/cliente/registro}" th:object="${cliente}" method="post" class="space-y-6">
+    <form th:action="@{/tecnicos/registro}" th:object="${tecnicos}" method="post" class="space-y-6">
         
         <div th:if="${error}" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
             <p th:text="${error}"></p>
@@ -83,7 +83,7 @@
     <div class="mt-6 text-center">
         <p class="text-sm text-gray-600">
             ¿Ya tienes cuenta? 
-            <a th:href="@{/login}" class="font-medium text-indigo-600 hover:text-indigo-500">
+            <a th:href="@{/login_tecnicos}" class="font-medium text-indigo-600 hover:text-indigo-500">
                 Iniciar Sesión
             </a>
         </p>

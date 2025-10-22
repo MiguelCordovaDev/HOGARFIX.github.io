@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HogarFix - La solucion a tus problemas del hogar</title>
     <meta name="description" content="HogarFix conecta amas de casa con técnicos profesionales de confianza.">
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}" sizes="32x32">
 
     <style>
         :root {
@@ -181,7 +181,7 @@
                                 Solicitar Servicio
                                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
                             </button>
-                            <a th:href="@{/busqueda}" class="btn-outline flex items-center gap-2 justify-center">
+                            <a th:href="@{/tecnicos}" class="btn-outline flex items-center gap-2 justify-center">
                                 <i data-lucide="users" class="w-4 h-4"></i>
                                 Ver Técnicos Disponibles
                             </a>
@@ -402,7 +402,7 @@
                 </div>
 
                 <div class="text-center mt-12">
-                    <button class="btn-primary">Solicitar Servicio Ahora</button>
+                    <button class="btn-primary">Consulte Aqui y Ahora</button>
                 </div>
             </div>
         </section>
@@ -532,6 +532,7 @@
                         <li><a href="#servicios" class="hover:text-primary transition-colors">Mantenimiento General</a>
                         </li>
                         <li><a href="#servicios" class="hover:text-primary transition-colors">Emergencias 24/7</a></li>
+                        <li><a th:href="@{/registro_tecnicos}" class="hover:text-primary transition-colors">Trabaja con nosotros</a></li>
                     </ul>
                 </div>
 
@@ -581,7 +582,7 @@
                             style="border-color: var(--border);">
                         <input type="text" placeholder="¿En qué te podemos ayudar?" class="w-full p-3 border rounded-lg"
                             style="border-color: var(--border);">
-                        <button class="btn-primary w-full">Solicitar Servicio</button>
+                        <button class="btn-primary w-full">Consulte Aqui</button>
                     </div>
                     <div class="bg-blue-50 p-4 rounded-lg">
                         <p class="text-sm text-primary font-medium">
@@ -607,6 +608,78 @@
                 </div>
             </div>
         </div>
+
+        <!--"Solicitar Servicio"-->
+        <div id="service-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div class="bg-white rounded-lg w-full max-w-2xl mx-4 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium">Solicitar Servicio</h3>
+                    <button id="service-modal-close" class="text-gray-500 text-xl" aria-label="Cerrar">&times;</button>
+                </div>
+
+                <form id="service-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium">Categoría:</label>
+                        <select id="service-category" required class="w-full p-2 border rounded">
+                            <option value="">Selecciona...</option>
+                            <option value="plomeria">Plomería</option>
+                            <option value="electricidad">Electricidad</option>
+                            <option value="electrodomesticos">Reparación de Electrodomésticos</option>
+                            <option value="instalaciones">Instalaciones (A/C, Calentadores)</option>
+                            <option value="mantenimiento">Mantenimiento General</option>
+                            <option value="emergencia">Emergencia 24/7</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Nivel de Urgencia:</label>
+                        <select id="service-urgency" required class="w-full p-2 border rounded">
+                            <option value="">Selecciona...</option>
+                            <option value="baja">Baja - Puedo esperar varios días</option>
+                            <option value="media">Media - Necesito ayuda esta semana</option>
+                            <option value="alta">Alta - Necesito ayuda hoy o mañana</option>
+                            <option value="emergencia">Emergencia - Necesito ayuda inmediata</option>
+                        </select>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium">Nombre:</label>
+                            <input id="service-name" type="text" required class="w-full p-2 border rounded"
+                                placeholder="Tu nombre" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium">Teléfono:</label>
+                            <input id="service-phone" type="tel" required class="w-full p-2 border rounded"
+                                placeholder="+51 968 459 279" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Dirección:</label>
+                        <input id="service-address" type="text" required class="w-full p-2 border rounded"
+                            placeholder="Dirección completa" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Fecha preferida (opcional)</label>
+                        <input id="service-date" type="date" class="w-full p-2 border rounded" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Descripción:</label>
+                        <textarea id="service-description" required rows="4" class="w-full p-2 border rounded"
+                            placeholder="Describe el problema"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" id="service-cancel" class="btn-outline px-4 py-2">Cancelar</button>
+                        <button type="submit" class="btn-primary px-4 py-2">Enviar Solicitud</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </footer>
 
 
@@ -646,7 +719,7 @@
 
 
         document.querySelectorAll('.btn-primary').forEach(button => {
-            if (button.textContent.includes('Solicitar Servicio')) {
+            if (button.textContent.includes('Consulte Aqui')) {
                 button.addEventListener('click', function () {
                     window.open('https://wa.me/51968459279?text=Hola, necesito solicitar un servicio técnico para mi hogar.', '_blank');
                 });
@@ -661,6 +734,75 @@
                     window.open('https://wa.me/51968459279', '_blank');
                 }
             });
+        });
+
+        // ---modal de "Solicitar Servicio" ---
+        const modal = document.getElementById('service-modal');
+        const btnClose = document.getElementById('service-modal-close');
+        const btnCancel = document.getElementById('service-cancel');
+        const form = document.getElementById('service-form');
+        const dateInput = document.getElementById('service-date');
+
+        function openServiceModal() {
+            // establecer fecha mínima a hoy
+            if (dateInput) {
+                const today = new Date();
+                dateInput.min = today.toISOString().split('T')[0];
+            }
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeServiceModal() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+            form.reset();
+        }
+
+        // Abrir modal desde cualquier boton con texto "Solicitar Servicio"
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent && button.textContent.includes('Solicitar Servicio')) {
+                button.addEventListener('click', function (e) {
+                    // prevenir comportamiento por defecto (enlaces)
+                    e.preventDefault();
+                    openServiceModal();
+                });
+            }
+        });
+
+        // cerrar modal: botón, cancelar o clic fuera del contenido
+        btnClose.addEventListener('click', closeServiceModal);
+        btnCancel.addEventListener('click', closeServiceModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeServiceModal();
+        });
+
+        // Envío del formulario
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const payload = {
+                category: document.getElementById('service-category').value,
+                urgency: document.getElementById('service-urgency').value,
+                name: document.getElementById('service-name').value.trim(),
+                phone: document.getElementById('service-phone').value.trim(),
+                address: document.getElementById('service-address').value.trim(),
+                date: document.getElementById('service-date').value || null,
+                description: document.getElementById('service-description').value.trim(),
+            };
+
+            // validación mínima
+            if (!payload.category || !payload.urgency || !payload.name || !payload.phone || !payload.address || !payload.description) {
+                alert('Por favor completa todos los campos obligatorios.');
+                return;
+            }
+
+            // Aquí envías payload al backend o lo procesas como necesites.
+            console.log('Solicitud enviada:', payload);
+
+            // feedback al usuario
+            alert('Solicitud enviada con éxito. Nos pondremos en contacto contigo pronto.');
+            closeServiceModal();
         });
     </script>
 </body>

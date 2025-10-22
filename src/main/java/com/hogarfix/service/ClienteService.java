@@ -14,51 +14,28 @@ import java.util.Optional;
 @Service
 public class ClienteService {
 
-    private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
-    private final ClienteRepository clienteRepository;
-    private final PasswordEncoder passwordEncoder; // <-- INYECTADO
+  @Autowired
+    private ClienteRepository clienteRepository;
 
+    // Inyección de PasswordEncoder para hashear la contraseña
     @Autowired
-    public ClienteService(ClienteRepository clienteRepository, PasswordEncoder passwordEncoder) { // <-- INYECTADO EN EL CONSTRUCTOR
-        this.clienteRepository = clienteRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private PasswordEncoder passwordEncoder;
 
-    
-    public Cliente registrarCliente(Cliente cliente) {
-        log.info("Intentando registrar nuevo cliente: {}", cliente.getEmail());
-
+   
+    public Cliente guardarCliente(Cliente cliente) {
         
-        if (clienteRepository.existsByEmail(cliente.getEmail())) {
-            log.warn("Error de negocio: El email {} ya está registrado para un cliente.", cliente.getEmail());
-            return null;
+        // 1. Verificar si el email ya existe
+        Optional<Cliente> existingClient = clienteRepository.findByEmail(cliente.getEmail());
+        if (existingClient.isPresent()) {
+            // Si ya existe, lanzamos una excepción para que el controlador la maneje y muestre un error.
+            throw new IllegalStateException("El correo electrónico ya se encuentra registrado.");
         }
         
-        // Cifrar la contraseña antes de guardarla (BCryptPasswordEncoder)
-        String hashedPassword = passwordEncoder.encode(cliente.getPassword());
-        cliente.setPassword(hashedPassword); // <-- SE ALMACENA EL HASH
-
+        // 2. Hashear la contraseña antes de guardar
+        String contrasenaHash = passwordEncoder.encode(cliente.getPassword());
+        cliente.setPassword(contrasenaHash);
+        
+        // 3. Guardar el cliente
         return clienteRepository.save(cliente);
-    }
-    
-    /**
-     * Autentica un cliente verificando el hash de la contraseña.
-     */
-    public Cliente autenticarCliente(String email, String rawPassword) {
-        
-        Optional<Cliente> clienteOptional = clienteRepository.findByEmail(email);
-
-        if (clienteOptional.isEmpty()) {
-            return null; // Usuario no encontrado
-        }
-
-        Cliente cliente = clienteOptional.get();
-        
-        // Verificar la contraseña proporcionada (rawPassword) contra la hasheada (cliente.getPassword())
-        if (passwordEncoder.matches(rawPassword, cliente.getPassword())) { // <-- VERIFICACIÓN DEL HASH
-            return cliente; // Autenticación exitosa
-        }
-
-        return null; // Contraseña incorrecta
     }
 }

@@ -21,37 +21,5 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    /**
-     * POST /api/clientes/registro - Permite a las amas de casa registrarse.
-     */
-    @PostMapping("/registro")
-    public ResponseEntity<Cliente> registrarCliente(@RequestBody Cliente cliente) {
-        Cliente nuevoCliente = clienteService.registrarCliente(cliente);
-
-        // Regla de negocio TDD: Conflicto por email duplicado
-        if (nuevoCliente == null) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT); // 409
-        }
-        return new ResponseEntity<>(nuevoCliente, HttpStatus.CREATED); // 201
-    }
-
-    /**
-     * POST /api/clientes/login - Autenticación simple de cliente.
-     */
-    @PostMapping("/login")
-    public ResponseEntity<Cliente> autenticarCliente(@RequestBody Map<String, String> credenciales) {
-        String email = credenciales.get("email");
-        String password = credenciales.get("password");
-
-        if (email == null || password == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400
-        }
-        
-        Cliente cliente = clienteService.autenticarCliente(email, password);
-
-        if (cliente == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // 401
-        }
-        return new ResponseEntity<>(cliente, HttpStatus.OK); // 200
-    }
+    
 }

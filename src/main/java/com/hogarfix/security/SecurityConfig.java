@@ -23,20 +23,16 @@ public class SecurityConfig {
             // 2. Define reglas de autorización de peticiones
             .authorizeHttpRequests(authorize -> authorize
                 // Rutas Estáticas y de la Web (Públicas)
-                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**", "/index.html","/busqueda.html","/register","/login","/busqueda","/registro.html").permitAll() 
-                
-                // RUTAS DE API (TODO el que empiece con /api/** es público)
-                // Esto incluye /api/tecnicos, /api/clientes, etc.
+                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**","/registro_tecnicos","/login_tecnicos", "/index.html","/pagos","/register","/login","/registro.html","/tecnicos").permitAll() 
+                              
                 .requestMatchers("/api/**").permitAll()
                 
-                // Cualquier otra petición que no coincida con las anteriores, debe estar autenticada.
-                // Es buena práctica dejar esta como última línea de autorización
                 .anyRequest().authenticated()
             )
             
             // 3. Configura el formulario de login 
             .formLogin(form -> form
-                // Si tienes una página de login.html, puedes usar loginPage("/login.html")
+                
                 .loginPage("/login") 
                 .permitAll()
             )

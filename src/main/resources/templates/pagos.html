@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pagos · HogarFix</title>
+
+  <!-- Tailwind CDN (versión para desarrollo) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --glass-bg: rgba(255,255,255,0.7);
+      --accent: #0ea5e9; /* cyan-500 */
+      --muted: #6b7280;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+
+    html,body { height: 100%; }
+    body {
+      font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(14,165,233,0.08), transparent 10%),
+        radial-gradient(800px 500px at 90% 90%, rgba(99,102,241,0.06), transparent 10%),
+        linear-gradient(180deg,#f8fafc 0%, #eef2ff 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding: 24px;
+    }
+
+    /* card glass */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px) saturate(120%);
+      border: 1px solid rgba(15,23,42,0.06);
+      box-shadow: 0 6px 24px rgba(2,6,23,0.06);
+      border-radius: 14px;
+    }
+
+    /* tiny loader */
+    .spinner {
+      border: 3px solid rgba(0,0,0,0.06);
+      border-top-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      animation: spin 0.9s linear infinite;
+      display:inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* method button active */
+    .method-active {
+      box-shadow: 0 6px 18px rgba(14,165,233,0.12);
+      border-color: rgba(14,165,233,0.6);
+      background: linear-gradient(180deg, rgba(14,165,233,0.06), rgba(14,165,233,0.02));
+    }
+
+    /* subtle input focus */
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      box-shadow: 0 6px 18px rgba(14,165,233,0.08);
+      border-color: rgba(14,165,233,0.6);
+    }
+
+    /* responsive fine-tuning */
+    @media (max-width: 880px) {
+      .side-column { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="max-w-6xl mx-auto grid gap-6 grid-cols-1 lg:grid-cols-3 items-start">
+    <!-- MAIN CONTENT -->
+    <section class="lg:col-span-2 space-y-6">
+      <header class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-semibold text-slate-800">HogarFix · Pagos</h1>
+          <p class="text-sm text-slate-500 mt-1">Paga fácilmente tu servicio — seguro y rápido.</p>
+        </div>
+        <div class="text-right">
+          <div class="text-xs text-slate-500">Estado</div>
+          <div id="authStatus" class="text-sm font-medium text-amber-600">No autenticado</div>
+        </div>
+      </header>
+
+      <!-- CARD: PAYMENT -->
+      <section class="glass p-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-800">Formulario de pago</h2>
+            <p class="text-sm text-slate-500 mt-1">Servicio: <strong id="svcName">Reparación de lavadora</strong> · Técnico: <strong id="svcTech">Carlos</strong></p>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-slate-500">Total</div>
+            <div id="svcCost" class="text-lg font-bold text-slate-800">S/ 120.00</div>
+            <div class="text-xs text-slate-400 mt-1">Fecha: <span id="svcDate">2025-10-20</span></div>
+          </div>
+        </div>
+
+        <form id="paymentForm" class="mt-6 space-y-4" autocomplete="off" novalidate>
+          <!-- Cliente -->
+          <div>
+            <label class="block text-sm text-slate-600 mb-1">Nombre del cliente</label>
+            <input id="clienteNombre" class="w-full p-3 rounded-md border border-slate-200" placeholder="Ej. María Pérez" />
+            <p id="errNombre" class="text-xs text-danger mt-1 hidden"></p>
+          </div>
+
+          <!-- Métodos -->
+          <div>
+            <label class="block text-sm text-slate-600 mb-2">Método de pago</label>
+            <div class="flex gap-3">
+              <button type="button" data-method="tarjeta" class="method-btn flex-1 px-4 py-2 rounded-md border border-slate-200 bg-white text-sm font-medium">Tarjeta</button>
+              <button type="button" data-method="yape" class="method-btn flex-1 px-4 py-2 rounded-md border border-slate-200 bg-white text-sm font-medium">Yape</button>
+              <button type="button" data-method="transferencia" class="method-btn flex-1 px-4 py-2 rounded-md border border-slate-200 bg-white text-sm font-medium">Transferencia</button>
+            </div>
+          </div>
+
+          <!-- Tarjeta -->
+          <div id="panel-tarjeta" class="method-panel mt-2 space-y-3">
+            <div>
+              <label class="text-sm text-slate-600 mb-1 block">Número de tarjeta</label>
+              <input id="cardNumber" placeholder="1234 5678 9012 3456" class="w-full p-3 rounded-md border border-slate-200" inputmode="numeric" maxlength="23" />
+              <p id="errCard" class="text-xs text-danger mt-1 hidden"></p>
+            </div>
+
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="text-sm text-slate-600 mb-1 block">Vencimiento (MM/AA)</label>
+                <input id="cardExpiry" placeholder="MM/AA" class="w-full p-3 rounded-md border border-slate-200" maxlength="5" />
+                <p id="errExpiry" class="text-xs text-danger mt-1 hidden"></p>
+              </div>
+              <div style="width:120px">
+                <label class="text-sm text-slate-600 mb-1 block">CVV</label>
+                <input id="cardCvv" placeholder="123" class="w-full p-3 rounded-md border border-slate-200" maxlength="4" inputmode="numeric"/>
+                <p id="errCvv" class="text-xs text-danger mt-1 hidden"></p>
+              </div>
+            </div>
+
+            <div class="text-sm text-slate-500">Últimos 4: <span id="cardLast4">—</span></div>
+          </div>
+
+          <!-- Yape -->
+          <div id="panel-yape" class="method-panel mt-2 space-y-3 hidden">
+            <div>
+              <label class="text-sm text-slate-600 mb-1 block">Número Yape (Celular)</label>
+              <input id="yapePhone" placeholder="9XXXXXXXX" class="w-full p-3 rounded-md border border-slate-200" inputmode="numeric" maxlength="9" />
+              <p id="errYapePhone" class="text-xs text-danger mt-1 hidden"></p>
+            </div>
+            <div class="text-sm text-slate-500">Se abrirá la app Yape / se mostrará un QR con el monto.</div>
+          </div>
+
+          <!-- Transferencia -->
+          <div id="panel-transferencia" class="method-panel mt-2 space-y-3 hidden">
+            <div>
+              <label class="text-sm text-slate-600 mb-1 block">Banco</label>
+              <select id="bankSelect" class="w-full p-3 rounded-md border border-slate-200">
+                <option value="">Selecciona banco</option>
+                <option value="bcp">BCP</option>
+                <option value="interbank">Interbank</option>
+                <option value="bbva">BBVA</option>
+                <option value="scotia">Scotiabank</option>
+              </select>
+              <p id="errBank" class="text-xs text-danger mt-1 hidden"></p>
+            </div>
+            <div>
+              <label class="text-sm text-slate-600 mb-1 block">Código de referencia / N° operación</label>
+              <input id="transferRef" placeholder="Ej. 001234567890" class="w-full p-3 rounded-md border border-slate-200" />
+              <p id="errRef" class="text-xs text-danger mt-1 hidden"></p>
+            </div>
+            <div class="text-sm text-slate-500">Sigue las instrucciones del banco para completar la transferencia por S/ <span id="transferAmount">120.00</span>.</div>
+          </div>
+
+          <!-- Submit -->
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
+            <div class="text-sm text-slate-500">Tu pago será procesado de forma segura.</div>
+            <div class="flex items-center gap-3">
+              <button id="submitBtn" type="submit" class="px-4 py-2 rounded-md text-white bg-cyan-500 hover:bg-cyan-600 font-semibold flex items-center gap-2">
+                <span id="btnText">Pagar ahora</span>
+                <span id="btnLoader" class="hidden"><span class="spinner"></span></span>
+              </button>
+            </div>
+          </div>
+
+          <div id="resultMessage" class="mt-3 text-sm hidden"></div>
+        </form>
+      </section>
+
+      <!-- INFO / NOTES -->
+      <section class="glass p-4 text-sm text-slate-600">
+        <strong>Nota:</strong> Este front demuestra la interfaz y validaciones básicas en cliente. En producción:
+        <ul class="list-disc ml-5 mt-2">
+          <li>No envíes PAN completo al servidor: usa tokenización de pasarela (PCI).</li>
+          <li>Autentica peticiones con JWT y TLS (HTTPS).</li>
+          <li>El backend debe validar todo de nuevo (monto, estado, firma, Luhn opcional).</li>
+        </ul>
+      </section>
+    </section>
+
+    <!-- SIDE COLUMN -->
+    <aside class="side-column lg:col-span-1 space-y-4">
+      <div class="glass p-4">
+        <h3 class="text-sm font-semibold text-slate-800">Panel rápido</h3>
+        <p class="text-xs text-slate-500 mt-1">Resumen del servicio seleccionado</p>
+        <div class="mt-3 space-y-2 text-sm">
+          <div><span class="text-slate-600">Servicio:</span> <strong id="sideSvc">Reparación de lavadora</strong></div>
+          <div><span class="text-slate-600">Técnico:</span> <strong id="sideTech">Carlos</strong></div>
+          <div><span class="text-slate-600">Costo:</span> <strong id="sideCost">S/ 120.00</strong></div>
+          <div><span class="text-slate-600">Fecha:</span> <strong id="sideDate">2025-10-20</strong></div>
+        </div>
+        <div class="mt-4">
+          <button id="changeSvcBtn" class="w-full px-3 py-2 rounded-md border border-slate-200 bg-white text-sm">Cambiar servicio</button>
+        </div>
+      </div>
+
+      <div class="glass p-4">
+        <h4 class="text-sm font-semibold">Estado del sistema</h4>
+        <p id="sysStatus" class="text-xs text-slate-500 mt-1">Backend: desconectado (simulado)</p>
+        <div class="mt-3 text-xs text-slate-500">Logs: Se recomienda usar Logback en Java para trazabilidad y Apache POI para reportes si es necesario.</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- SCRIPT: lógica cliente (simulación) -->
+  <script>
+    /* ---------- Helpers ---------- */
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    function luhnCheck(num){
+      const s = num.replace(/\D/g,'');
+      if (!s) return false;
+      let sum=0, alt=false;
+      for (let i=s.length-1;i>=0;i--){
+        let n = parseInt(s[i],10);
+        if (alt){ n *= 2; if (n>9) n-=9; }
+        sum += n; alt = !alt;
+      }
+      return sum % 10 === 0;
+    }
+    function validExpiry(mmYY){
+      if (!mmYY) return false;
+      const parts = mmYY.split('/');
+      if (parts.length !== 2) return false;
+      const mm = parseInt(parts[0],10), yy = parseInt(parts[1],10);
+      if (!mm || !yy) return false;
+      if (mm < 1 || mm > 12) return false;
+      const now = new Date();
+      const curYY = now.getFullYear() % 100;
+      const curMM = now.getMonth() + 1;
+      if (yy < curYY) return false;
+      if (yy === curYY && mm < curMM) return false;
+      return true;
+    }
+    function validCVV(cvv){
+      return /^\d{3,4}$/.test(cvv);
+    }
+    function formatCardInput(v){
+      return v.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim();
+    }
+
+    /* ---------- Inicialización ---------- */
+    let currentMethod = 'tarjeta';
+    const methods = ['tarjeta','yape','transferencia'];
+
+    // elementos
+    const methodButtons = $$('.method-btn');
+    const panels = {
+      tarjeta: $('#panel-tarjeta'),
+      yape: $('#panel-yape'),
+      transferencia: $('#panel-transferencia')
+    };
+    const resultMessage = $('#resultMessage');
+
+    // servicio (puedes inyectar dinámicamente desde server-side)
+    const service = { id:'svc-1', nombre:'Reparación de lavadora', tecnico:'Carlos', costo:120.00, fecha:'2025-10-20' };
+    $('#svcName').textContent = service.nombre;
+    $('#svcTech').textContent = service.tecnico;
+    $('#svcCost').textContent = 'S/ ' + service.costo.toFixed(2);
+    $('#svcDate').textContent = service.fecha;
+    $('#sideSvc').textContent = service.nombre;
+    $('#sideTech').textContent = service.tecnico;
+    $('#sideCost').textContent = 'S/ ' + service.costo.toFixed(2);
+    $('#sideDate').textContent = service.fecha;
+    $('#transferAmount').textContent = service.costo.toFixed(2);
+
+    // autostatus demo
+    let jwt = ''; // si integras, setear aquí
+    const authStatus = $('#authStatus');
+    function updateAuth(){
+      if (jwt) { authStatus.textContent = 'Autenticado'; authStatus.classList.remove('text-amber-600'); authStatus.classList.add('text-green-600'); }
+      else { authStatus.textContent = 'No autenticado'; authStatus.classList.remove('text-green-600'); authStatus.classList.add('text-amber-600'); }
+    }
+    updateAuth();
+
+    /* ---------- cambiar método ---------- */
+    methodButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const m = btn.dataset.method;
+        setMethod(m);
+      });
+    });
+
+    function setMethod(m){
+      currentMethod = m;
+      methodButtons.forEach(b => {
+        if (b.dataset.method === m) {
+          b.classList.add('method-active');
+        } else {
+          b.classList.remove('method-active');
+        }
+      });
+      // mostrar paneles
+      methods.forEach(mm => panels[mm].classList.toggle('hidden', mm !== m));
+      // limpiar mensajes
+      hideErrors();
+      resultMessage.classList.add('hidden');
+      $('#btnText').textContent = m === 'tarjeta' ? 'Pagar con tarjeta' : (m === 'yape' ? 'Pagar con Yape' : 'Registrar transferencia');
+    }
+
+    setMethod('tarjeta');
+
+    /* ---------- inputs especiales ---------- */
+    $('#cardNumber').addEventListener('input', (e) => {
+      e.target.value = formatCardInput(e.target.value);
+      const digits = e.target.value.replace(/\D/g,'');
+      $('#cardLast4').textContent = digits.length >= 4 ? digits.slice(-4) : '—';
+    });
+    $('#cardExpiry').addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g,'').slice(0,4);
+      if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+      e.target.value = v;
+    });
+
+    /* ---------- validaciones ---------- */
+    function hideErrors(){
+      $$('#paymentForm .text-danger').forEach(n => n.classList.add('hidden'));
+      $$('#paymentForm .text-danger').forEach(n => n.textContent = '');
+      const errIds = ['errNombre','errCard','errExpiry','errCvv','errYapePhone','errBank','errRef'];
+      errIds.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+    }
+
+    function showError(id, msg){
+      const el = document.getElementById(id);
+      if (el) { el.textContent = msg; el.classList.remove('hidden'); el.classList.add('text-danger'); el.style.color = 'var(--danger)'; }
+    }
+
+    function validateForm(){
+      hideErrors();
+      const nombre = $('#clienteNombre').value.trim();
+      if (!nombre) { showError('errNombre','Nombre obligatorio'); return { ok:false }; }
+
+      if (currentMethod === 'tarjeta'){
+        const card = $('#cardNumber').value.replace(/\D/g,'');
+        const expiry = $('#cardExpiry').value.trim();
+        const cvv = $('#cardCvv').value.trim();
+        if (card.length < 12) { showError('errCard','Número de tarjeta inválido'); return { ok:false }; }
+        if (!luhnCheck(card)) { showError('errCard','Tarjeta no válida (Luhn)'); return { ok:false }; }
+        if (!validExpiry(expiry)) { showError('errExpiry','Fecha inválida o expirada'); return { ok:false }; }
+        if (!validCVV(cvv)) { showError('errCvv','CVV inválido'); return { ok:false }; }
+        return { ok:true, method:'tarjeta', payload:{ nombre, card_last4: card.slice(-4) } };
+      }
+
+      if (currentMethod === 'yape'){
+        const phone = $('#yapePhone').value.trim();
+        if (!/^[9]\d{8}$/.test(phone)) { showError('errYapePhone','Número Yape inválido (9XXXXXXXX)'); return { ok:false }; }
+        return { ok:true, method:'yape', payload:{ nombre, telefono:phone } };
+      }
+
+      if (currentMethod === 'transferencia'){
+        const bank = $('#bankSelect').value;
+        const ref = $('#transferRef').value.trim();
+        if (!bank) { showError('errBank','Selecciona un banco'); return { ok:false }; }
+        if (!ref) { showError('errRef','Ingresa el código o referencia'); return { ok:false }; }
+        return { ok:true, method:'transferencia', payload:{ nombre, banco:bank, referencia:ref } };
+      }
+
+      return { ok:false };
+    }
+
+    /* ---------- simulación de envío (reemplaza con tu endpoint Java) ---------- */
+    async function simulateSend(payload){
+      // En producción: fetch('/api/pagos/crear', {method:'POST', headers:{'Authorization':'Bearer '+jwt,'Content-Type':'application/json'}, body: JSON.stringify(payload)})
+      // Aquí simulamos latencia y respuesta
+      await new Promise(r => setTimeout(r, 1000 + Math.random()*900));
+      // simulamos 92% éxito
+      if (Math.random() < 0.92) {
+        return { success:true, id: 'pay_' + Date.now(), estado: 'OK' };
+      } else {
+        return { success:false, error: 'rechazado por pasarela' };
+      }
+    }
+
+    /* ---------- submit ---------- */
+    const form = $('#paymentForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      resultMessage.classList.add('hidden'); resultMessage.textContent='';
+      const validation = validateForm();
+      if (!validation.ok) return;
+
+      // UI: loading
+      $('#submitBtn').disabled = true;
+      $('#btnLoader').classList.remove('hidden');
+      $('#btnText').textContent = 'Procesando...';
+
+      try {
+        // Payload base
+        const payload = {
+          servicioId: service.id,
+          metodo: validation.method,
+          cliente: validation.payload,
+          monto: service.costo
+        };
+
+        // Simular llamada (reemplaza con fetch a tu backend Java)
+        const res = await simulateSend(payload);
+
+        if (res.success){
+          resultMessage.classList.remove('hidden');
+          resultMessage.style.color = 'var(--success)';
+          resultMessage.textContent = '✅ Pago realizado con éxito. ID: ' + res.id;
+          // limpiar campos sensibles
+          $('#cardNumber').value = ''; $('#cardExpiry').value=''; $('#cardCvv').value='';
+          $('#yapePhone').value=''; $('#transferRef').value='';
+          // actualizar UI later: refrescar historial, etc.
+          $('#sysStatus').textContent = 'Backend: conectado (simulado)';
+        } else {
+          resultMessage.classList.remove('hidden');
+          resultMessage.style.color = 'var(--danger)';
+          resultMessage.textContent = '❌ Pago rechazado: ' + (res.error || 'error desconocido');
+        }
+      } catch(err){
+        resultMessage.classList.remove('hidden');
+        resultMessage.style.color = 'var(--danger)';
+        resultMessage.textContent = '❌ Error al procesar. Revisa la consola.';
+        console.error(err);
+      } finally {
+        $('#submitBtn').disabled = false;
+        $('#btnLoader').classList.add('hidden');
+        $('#btnText').textContent = currentMethod === 'tarjeta' ? 'Pagar con tarjeta' : (currentMethod === 'yape' ? 'Pagar con Yape' : 'Registrar transferencia');
+      }
+    });
+
+    // "Cambiar servicio" demo
+    $('#changeSvcBtn').addEventListener('click', () => {
+      alert('En la integración real, aquí abrirías un selector de servicios desde tu backend Java.');
+    });
+  </script>
+</body>
+</html>
