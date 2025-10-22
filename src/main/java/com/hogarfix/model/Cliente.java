@@ -1,15 +1,20 @@
 package com.hogarfix.model;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-
-
+import jakarta.persistence.JoinColumn; // ¡Asegúrate de que sea JAKARTA!
 
 @Entity
 @Table(name = "tb_cliente")
@@ -42,6 +47,12 @@ public class Cliente {
 
     @Column(name = "fechaCreacion")
     private Date fechaCreacion = new Date();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "clientes_roles", // Cambia a tecnicos_roles en el modelo Tecnico
+            joinColumns = @JoinColumn(name = "cliente_id"), // Cambia a tecnico_id en Tecnico
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles;
 
     // --- Getters y Setters ---
 
@@ -116,4 +127,14 @@ public class Cliente {
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    
 }

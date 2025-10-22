@@ -14,37 +14,42 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-     @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Deshabilita CSRF (es común deshabilitarlo en APIs REST)
-            .csrf(csrf -> csrf.disable()) 
-            
-            // 2. Define reglas de autorización de peticiones
-            .authorizeHttpRequests(authorize -> authorize
-                // Rutas Estáticas y de la Web (Públicas)
-                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**","/registro_tecnicos","/login_tecnicos", "/index.html","/pagos","/register","/login","/registro.html","/tecnicos","/cliente/registro").permitAll() 
-                              
-                .requestMatchers("/api/**").permitAll()
+                // 1. Deshabilita CSRF (es común deshabilitarlo en APIs REST)
+                .csrf(csrf -> csrf.disable())
+
+                // 2. Define reglas de autorización de peticiones
+                .authorizeHttpRequests(authorize -> authorize
+                        // Rutas Estáticas y de la Web (Públicas)
+                        .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**", "/registro_tecnicos",
+                                "/login_tecnicos", "/tecnico/registro", "/index.html", "/pagos", "/register", "/login",
+                                "/tecnicos", "/cliente/registro")
+                        .permitAll()
+
+                        .requestMatchers("/api/**").permitAll()
+
+                        .anyRequest().authenticated())
+
+                // 3. Configura el formulario de login
+                .formLogin(form -> form
+
+                        .loginPage("/login")
+                        .permitAll())
+
+                .formLogin(form -> form
+                        .loginPage("/login_tecnicos")
+                        .loginProcessingUrl("/login_tecnicos") // <--- Usará el proveedor 2 (Técnicos)
+                )
                 
-                .anyRequest().authenticated()
-            )
-            
-            // 3. Configura el formulario de login 
-            .formLogin(form -> form
-                
-                .loginPage("/login") 
-                .permitAll()
-            )
-            
-            // 4. Configura el logout
-            .logout(logout -> logout
-                .permitAll());
-                
+                // 4. Configura el logout
+                .logout(logout -> logout
+                        .permitAll());
+
         return http.build();
     }
-    
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

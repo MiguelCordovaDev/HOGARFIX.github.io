@@ -1,69 +1,52 @@
 package com.hogarfix.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.hogarfix.model.Tecnico;
 import com.hogarfix.service.TecnicoService;
-import com.google.common.collect.ImmutableList; // Librería Google Guava
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-// Aplicación del principio MVC (C: Controlador)
-@RestController
-@RequestMapping("/api/tecnicos")
+@Controller
 public class TecnicoController {
 
-    private final TecnicoService tecnicoService;
-
     @Autowired
-    public TecnicoController(TecnicoService tecnicoService) {
-        this.tecnicoService = tecnicoService;
+    private TecnicoService tecnicoService;
+
+    // 1. Muestra el formulario de registro de técnicos (ej: registro_tecnicos.html)
+    @GetMapping("/registro_tecnicos")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("tecnico", new Tecnico()); 
+        return "registro_tecnicos"; // Asume que la vista se llama registro_tecnicos.html
     }
 
-    /**
-     * POST /api/tecnicos - Registrar un nuevo técnico
-     */
-    @PostMapping
-    public ResponseEntity<Tecnico> registrarTecnico(@RequestBody Tecnico tecnico) {
-        Tecnico nuevoTecnico = tecnicoService.guardarTecnico(tecnico);
-
-        // Manejo de la regla de negocio definida en TDD (email duplicado)
-        if (nuevoTecnico == null) {
-            // Retorna un error 409 Conflict si el recurso ya existe
-            return new ResponseEntity<>(HttpStatus.CONFLICT); 
+    // 2. Procesa el formulario POST
+    @PostMapping("/tecnico/registro") // Se puede usar una URL específica
+    public String registerTecnico(@ModelAttribute("tecnico") Tecnico tecnico, RedirectAttributes redirectAttributes) {
+        
+        if (tecnicoService.existsByEmail(tecnico.getEmail())) {
+            redirectAttributes.addFlashAttribute("error", "El email ya está registrado como técnico.");
+            return "redirect:/registro_tecnicos"; 
         }
-        return new ResponseEntity<>(nuevoTecnico, HttpStatus.CREATED);
+        
+        try {
+            tecnicoService.saveTecnico(tecnico);
+            redirectAttributes.addFlashAttribute("success", "Registro de técnico exitoso. ¡Ahora puedes iniciar sesión!");
+            return "redirect:/login_tecnicos"; // Redirigir al login de técnicos
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Ocurrió un error al registrar el técnico.");
+            return "redirect:/registro_tecnicos";
+        }
     }
-
-    /**
-     * GET /api/tecnicos - Obtener todos los técnicos (uso de Guava)
-     */
-    @GetMapping
-    public ResponseEntity<List<Tecnico>> obtenerTodosLosTecnicos() {
-        List<Tecnico> tecnicos = tecnicoService.buscarTodos();
-        
-        // Uso de Google Guava: ImmutableList.copyOf (mejora la seguridad y eficiencia 
-        // al evitar modificaciones accidentales de la lista)
-        List<Tecnico> tecnicosInmutables = ImmutableList.copyOf(tecnicos); 
-        
-        if (tecnicosInmutables.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(tecnicosInmutables, HttpStatus.OK);
-    }
-
-    /**
-     * GET /api/tecnicos/categoria/{id} - Obtener técnicos por especialidad
-     */
-    @GetMapping("/categoria/{id}")
-    public ResponseEntity<List<Tecnico>> obtenerTecnicosPorCategoria(@PathVariable("id") Long idCategoria) {
-        List<Tecnico> tecnicos = tecnicoService.buscarPorCategoria(idCategoria);
-        
-        if (tecnicos.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(tecnicos, HttpStatus.OK);
+    
+    // 3. Muestra el formulario de Login de Técnicos (login_tecnicos.html)
+    @GetMapping("/login_tecnicos")
+    public String loginTecnicos() {
+        // Muestra una vista de login específica para técnicos, si la tienes.
+        return "login_tecnicos"; 
     }
 }

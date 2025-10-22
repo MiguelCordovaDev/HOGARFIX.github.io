@@ -24,18 +24,9 @@ public class AuthController {
         return "tecnicos"; // 
     }
 
-    @GetMapping("/registro_tecnicos")
-    public String registerPage(Model model) {
-        
-        model.addAttribute("tecnicos", new Tecnico());
-        return "registro_tecnicos"; 
-    }
+   
 
-     @GetMapping("/login_tecnicos")
-    public String LogintecnicoPage(Model model) {
-        
-        model.addAttribute("tecnicos", new Tecnico());
-        return "login_tecnicos"; 
-    }
+    
+
 }
 

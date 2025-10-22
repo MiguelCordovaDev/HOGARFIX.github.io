@@ -1,15 +1,19 @@
 package com.hogarfix.model;
 
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 
+import java.util.Collection;
 import java.util.Date;
-
-
 
 @Entity
 @Table(name = "tb_tecnico")
@@ -49,6 +53,12 @@ public class Tecnico {
     // Campos de auditoría (asumidos del diagrama)
     @Column(name = "fechaCreacion")
     private Date fechaCreacion = new Date();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "clientes_roles", // Cambia a tecnicos_roles en el modelo Tecnico
+            joinColumns = @JoinColumn(name = "tecnico_id"), // Cambia a tecnico_id en Tecnico
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Collection<Role> roles;
 
     // --- Getters y Setters ---
 
@@ -138,5 +148,13 @@ public class Tecnico {
 
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }
