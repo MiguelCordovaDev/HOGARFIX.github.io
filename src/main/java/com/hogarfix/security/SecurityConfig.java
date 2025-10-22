@@ -23,7 +23,7 @@ public class SecurityConfig {
             // 2. Define reglas de autorización de peticiones
             .authorizeHttpRequests(authorize -> authorize
                 // Rutas Estáticas y de la Web (Públicas)
-                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**","/registro_tecnicos","/login_tecnicos", "/index.html","/pagos","/register","/login","/registro.html","/tecnicos").permitAll() 
+                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**","/registro_tecnicos","/login_tecnicos", "/index.html","/pagos","/register","/login","/registro.html","/tecnicos","/cliente/registro").permitAll() 
                               
                 .requestMatchers("/api/**").permitAll()
                 

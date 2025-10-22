@@ -1,41 +1,38 @@
 package com.hogarfix.service;
 
-import com.hogarfix.model.Cliente;
-import com.hogarfix.repository.ClienteRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.hogarfix.model.Cliente;
+import com.hogarfix.repository.ClienteRepository;
 
-// Lógica de negocio para los clientes (amas de casa)
 @Service
 public class ClienteService {
 
-  @Autowired
-    private ClienteRepository clienteRepository;
-
-    // Inyección de PasswordEncoder para hashear la contraseña
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private ClienteRepository clienteRepository;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Necesario para encriptar la contraseña
 
-   
-    public Cliente guardarCliente(Cliente cliente) {
+    /**
+     * 1. Verifica si el email ya existe.
+     * 2. Encripta la contraseña antes de guardar.
+     * 3. Guarda el nuevo cliente en la BD.
+     */
+    public Cliente saveCliente(Cliente cliente) {
+        // Encriptar la contraseña (¡Obligatorio para Spring Security!)
+        cliente.setPassword(passwordEncoder.encode(cliente.getPassword()));
         
-        // 1. Verificar si el email ya existe
-        Optional<Cliente> existingClient = clienteRepository.findByEmail(cliente.getEmail());
-        if (existingClient.isPresent()) {
-            // Si ya existe, lanzamos una excepción para que el controlador la maneje y muestre un error.
-            throw new IllegalStateException("El correo electrónico ya se encuentra registrado.");
-        }
-        
-        // 2. Hashear la contraseña antes de guardar
-        String contrasenaHash = passwordEncoder.encode(cliente.getPassword());
-        cliente.setPassword(contrasenaHash);
-        
-        // 3. Guardar el cliente
+        // Guardar en la base de datos
         return clienteRepository.save(cliente);
+    }
+    
+    /**
+     * Verifica si un email ya existe antes de registrarlo.
+     */
+    public boolean existsByEmail(String email) {
+        return clienteRepository.findByEmail(email).isPresent();
     }
 }

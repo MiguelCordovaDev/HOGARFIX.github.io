@@ -3,7 +3,6 @@ package com.hogarfix.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,49 +14,38 @@ import com.hogarfix.service.ClienteService;
 @Controller
 public class RegistroController {
 
-  @Autowired
+ @Autowired
     private ClienteService clienteService;
 
-     @GetMapping("/register")
-    public String mostrarFormularioRegistro(Model model) {
-        // 'cliente' es el th:object que espera la plantilla HTML
+   
+    
+    // Muestra la vista de Registro (registro.html) y crea el objeto para el formulario
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        // Objeto necesario para th:object="${cliente}" en el formulario
         model.addAttribute("cliente", new Cliente()); 
-        return "registro";
+        return "registro"; 
     }
 
+    // Procesa el formulario POST desde registro.html (th:action="@{/cliente/registro}")
     @PostMapping("/cliente/registro")
-    public String registrarCliente(
-                                   // Puedes usar @Valid aquí si tienes anotaciones de validación en la entidad
-                                   @ModelAttribute("cliente") Cliente cliente,
-                                   BindingResult result,
-                                   RedirectAttributes redirectAttributes) {
-
+    public String registerUser(@ModelAttribute("cliente") Cliente cliente, RedirectAttributes redirectAttributes) {
         
-        if (result.hasErrors()) {
-            // Si hay errores de validación de campos (@Valid), regresa al formulario.
-            return "registro";
+        // 1. VERIFICACIÓN DE EXISTENCIA EN BD
+        if (clienteService.existsByEmail(cliente.getEmail())) {
+            redirectAttributes.addFlashAttribute("error", "El email ya está registrado. Intenta iniciar sesión.");
+            return "redirect:/register"; 
         }
         
         try {
-            // 1. Llama al servicio para guardar el cliente (hashea y verifica email)
-            clienteService.guardarCliente(cliente);
+            // 2. GUARDAR EN BD (incluye la encriptación de contraseña)
+            clienteService.saveCliente(cliente);
+            redirectAttributes.addFlashAttribute("success", "¡Registro exitoso! Ya puedes iniciar sesión.");
             
-            // 2. Si el guardado es exitoso, redirige con un mensaje de éxito.
-            redirectAttributes.addFlashAttribute("exito", "¡Registro completado! Por favor, inicia sesión.");
+            // 3. Redirigir al login
             return "redirect:/login"; 
-            
-        } catch (IllegalStateException e) {
-            // 3. Manejo de error de unicidad (lanzado desde ClienteService)
-            // Agrega el mensaje de error específico a los atributos flash.
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            
-            // 4. Vuelve a la página de registro
-            return "redirect:/register"; 
-            
         } catch (Exception e) {
-             // Manejo de error general (ej: error de BD no esperado)
-            redirectAttributes.addFlashAttribute("error", "Error inesperado al registrar el usuario. Inténtalo de nuevo.");
-            System.err.println("Error al registrar cliente: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Ocurrió un error al registrar. Inténtalo de nuevo.");
             return "redirect:/register";
         }
     }
