@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel del Técnico | HogarFix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Header -->
+  <header class="w-full bg-white border-b sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+<a href="index.html#inicio" class="text-2xl font-medium text-black hover:underline">HogarFix</a>
+      
+
+        <div class="desktop-nav flex items-center space-x-4">
+            <button onclick="cerrarSesion()" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <div class="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <!-- Perfil Técnico -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <div class="flex flex-col items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" alt="Técnico" class="w-24 h-24 rounded-full mb-3">
+        <h2 class="text-lg font-semibold">Carlos Mendoza</h2>
+        <p class="text-yellow-500 text-sm flex items-center gap-1">
+          ⭐ 4.9 <span class="text-gray-500">(127 reseñas)</span>
+        </p>
+      </div>
+
+      <div class="mt-4 text-gray-600 space-y-2 text-sm">
+        <p><i data-lucide="mail" class="inline w-4 h-4"></i> carlos.mendoza@hogarfix.com</p>
+        <p><i data-lucide="phone" class="inline w-4 h-4"></i> +51 968 459 279</p>
+        <p><i data-lucide="map-pin" class="inline w-4 h-4"></i> Lima, Perú</p>
+        <p><i data-lucide="clock" class="inline w-4 h-4"></i> 8 años de experiencia</p>
+      </div>
+
+      <div class="mt-4">
+        <h3 class="font-medium mb-2">Especialidades</h3>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <span class="bg-gray-200 text-gray-900 px-2 py-1 rounded">Plomería</span>
+          <span class="bg-gray-200 text-gray-900 px-2 py-1 rounded">Instalaciones</span>
+          <span class="bg-gray-200 text-gray-900 px-2 py-1 rounded">Emergencias 24/7</span>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-2 text-center">
+        <div>
+          <p class="text-2xl font-bold">245</p>
+          <p class="text-gray-500 text-sm">Trabajos completados</p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">3</p>
+          <p class="text-gray-500 text-sm">Solicitudes pendientes</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solicitudes -->
+    <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+      <!-- Tabs -->
+      <div class="flex justify-around border-b mb-4">
+        <button id="tabPendientes" class="tab border-b-2 border-black text-black pb-2 font-medium">
+          Pendientes <span class="ml-1 bg-gray-200 text-gray-900 px-2 py-0.5 rounded text-xs" id="countPend">3</span>
+        </button>
+        <button id="tabAceptadas" class="tab text-gray-600 pb-2 font-medium">
+          Aceptadas <span class="ml-1 bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs" id="countAcep">0</span>
+        </button>
+        <button id="tabCompletadas" class="tab text-gray-600 pb-2 font-medium">
+          Completadas <span class="ml-1 bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs" id="countComp">0</span>
+        </button>
+      </div>
+
+      <!-- Contenido -->
+      <div id="contenedorSolicitudes" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Modal Finalizar Servicio -->
+  <div id="modalFinalizar" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fadeIn">
+      <!-- Botón Cerrar -->
+      <button id="btnCerrar" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <h2 class="text-lg font-semibold mb-2 flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+        Finalizar Servicio
+      </h2>
+      <p class="text-gray-500 text-sm mb-4">
+        Completa la información para cerrar el servicio y generar la solicitud de pago.
+      </p>
+
+      <form id="formFinalizar" class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Nombre del Cliente</label>
+          <input type="text" id="nombreCliente" readonly class="w-full border rounded px-3 py-2 bg-gray-100">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Servicio Finalizado</label>
+          <input type="text" id="servicioFinalizado" class="w-full border rounded px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Monto Final a Cobrar (S/.)</label>
+          <input type="number" id="monto" class="w-full border rounded px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600">Comentario del Técnico</label>
+          <textarea id="comentario" maxlength="300" rows="3" class="w-full border rounded px-3 py-2"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-4">
+          <button type="button" id="btnCancelar" class="px-4 py-2 border rounded hover:bg-gray-100">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
+            Finalizar y Enviar al Cliente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.2s ease-out;
+    }
+  </style>
+
+  <script>
+    lucide.createIcons();
+
+    const solicitudes = [
+      { id: 1, nombre: "María González", tipo: "Plomería", fecha: "1 de octubre de 2025", direccion: "Av. Javier Prado 456, San Isidro", descripcion: "Tengo una fuga de agua debajo del lavaplatos.", estado: "pendiente" },
+      { id: 2, nombre: "Rosa Pérez", tipo: "Instalaciones", fecha: "2 de octubre de 2025", direccion: "Jr. Las Flores 123, Miraflores", descripcion: "Necesito instalar un aire acondicionado de 12,000 BTU.", estado: "pendiente" },
+      { id: 3, nombre: "Ana Torres", tipo: "Emergencia 24/7", fecha: "30 de septiembre de 2025", direccion: "Calle Los Sauces 789, Surco", descripcion: "Se rompió una tubería principal, hay agua por todas partes.", estado: "pendiente" }
+    ];
+
+    const contenedor = document.getElementById("contenedorSolicitudes");
+    const modal = document.getElementById("modalFinalizar");
+    const nombreCliente = document.getElementById("nombreCliente");
+    const servicioFinalizado = document.getElementById("servicioFinalizado");
+    let solicitudActual = null;
+
+    function actualizarContadores() {
+      document.getElementById("countPend").textContent = solicitudes.filter(s => s.estado === "pendiente").length;
+      document.getElementById("countAcep").textContent = solicitudes.filter(s => s.estado === "aceptada").length;
+      document.getElementById("countComp").textContent = solicitudes.filter(s => s.estado === "completada").length;
+    }
+
+    function render(estado) {
+      contenedor.innerHTML = "";
+      solicitudes.filter(s => s.estado === estado).forEach(s => {
+        const card = document.createElement("div");
+        card.className = "p-4 border rounded-lg shadow-sm bg-white";
+        card.innerHTML = `
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <h3 class="font-semibold">${s.nombre}</h3>
+              <p class="text-sm text-gray-500">${s.tipo}</p>
+              <p class="text-xs text-gray-400">${s.fecha}</p>
+            </div>
+            ${estado === "pendiente" ? `
+              <div class="flex gap-2">
+                <button onclick="aceptar(${s.id})" class="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 text-sm">Aceptar</button>
+                <button onclick="rechazar(${s.id})" class="px-3 py-1 border rounded text-sm hover:bg-gray-100">Rechazar</button>
+              </div>` : estado === "aceptada" ? `
+              <button onclick="abrirModal(${s.id})" class="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 text-sm">Finalizar</button>` : `
+              <span class="text-green-600 font-medium text-sm">Completado ✅</span>`}
+          </div>
+          <p class="text-gray-600 text-sm">${s.descripcion}</p>
+        `;
+        contenedor.appendChild(card);
+      });
+      actualizarContadores();
+    }
+
+    function aceptar(id) {
+      solicitudes.find(s => s.id === id).estado = "aceptada";
+      render("pendiente");
+    }
+
+    function rechazar(id) {
+      solicitudes.find(s => s.id === id).estado = "rechazada";
+      render("pendiente");
+    }
+
+    function abrirModal(id) {
+      solicitudActual = solicitudes.find(s => s.id === id);
+      nombreCliente.value = solicitudActual.nombre;
+      servicioFinalizado.value = solicitudActual.tipo;
+      modal.classList.remove("hidden");
+    }
+
+    document.getElementById("formFinalizar").onsubmit = (e) => {
+      e.preventDefault();
+      solicitudActual.estado = "completada";
+      modal.classList.add("hidden");
+      render("aceptada");
+    };
+
+      function cerrarSesion() {
+    // Aquí puedes redirigir al login o reiniciar la sesión
+    // Por ejemplo, recargar la página:
+    window.location.href = "index.html"; // O la página de login
+    // También puedes mostrar un mensaje antes:
+    // alert("Sesión cerrada");
+  }
+
+    document.getElementById("btnCancelar").onclick = () => modal.classList.add("hidden");
+    document.getElementById("btnCerrar").onclick = () => modal.classList.add("hidden");
+
+    document.getElementById("tabPendientes").onclick = () => activarTab("pendiente");
+    document.getElementById("tabAceptadas").onclick = () => activarTab("aceptada");
+    document.getElementById("tabCompletadas").onclick = () => activarTab("completada");
+
+    function activarTab(estado) {
+      document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("border-black", "text-black"));
+      if (estado === "pendiente") document.getElementById("tabPendientes").classList.add("border-black", "text-black");
+      if (estado === "aceptada") document.getElementById("tabAceptadas").classList.add("border-black", "text-black");
+      if (estado === "completada") document.getElementById("tabCompletadas").classList.add("border-black", "text-black");
+      render(estado);
+    }
+
+    activarTab("pendiente");
+  </script>
+</body>
+</html>
