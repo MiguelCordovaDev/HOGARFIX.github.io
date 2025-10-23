@@ -7,44 +7,51 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- * Clase de configuración para definir beans relacionados con la seguridad,
- * como el codificador de contraseñas (PasswordEncoder).
- */
 @Configuration
 public class SecurityConfig {
 
-     @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Deshabilita CSRF (es común deshabilitarlo en APIs REST)
-            .csrf(csrf -> csrf.disable()) 
-            
-            // 2. Define reglas de autorización de peticiones
-            .authorizeHttpRequests(authorize -> authorize
-                // Rutas Estáticas y de la Web (Públicas)
-                .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**","/registro_tecnicos","/login_tecnicos", "/index.html","/pagos","/register","/login","/registro.html","/tecnicos","/cliente/registro").permitAll() 
-                              
-                .requestMatchers("/api/**").permitAll()
-                
+            // 🔸 Deshabilitamos CSRF solo si estás trabajando con APIs REST.
+            .csrf(csrf -> csrf.disable())
+
+            // 🔸 Reglas de autorización
+            .authorizeHttpRequests(auth -> auth
+                // Recursos públicos (CSS, JS, imágenes, páginas principales)
+                .requestMatchers(
+                    "/", "/home", "/css/**", "/js/**", "/images/**",
+                    "/registro_tecnicos", "/login_tecnicos", "/index.html",
+                    "/pagos", "/register", "/login", "/registro.html",
+                    "/tecnicos", "/cliente/registro"
+                ).permitAll()
+
+                // 🔒 Solo usuarios autenticados pueden acceder a /usuario y otros recursos
+                .requestMatchers("/usuario/**").authenticated()
+
+                // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated()
             )
-            
-            // 3. Configura el formulario de login 
+
+            // 🔸 Configuración del login
             .formLogin(form -> form
-                
-                .loginPage("/login") 
+                .loginPage("/login")              // Página de login personalizada
+                .defaultSuccessUrl("/", true)     // Redirige al index tras iniciar sesión
                 .permitAll()
             )
-            
-            // 4. Configura el logout
+
+            // 🔸 Configuración del logout
             .logout(logout -> logout
-                .permitAll());
-                
+    .logoutUrl("/logout")
+    .logoutSuccessUrl("/")       // redirige al index
+    .invalidateHttpSession(true)
+    .deleteCookies("JSESSIONID")
+    .permitAll()
+);
+
         return http.build();
     }
-    
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

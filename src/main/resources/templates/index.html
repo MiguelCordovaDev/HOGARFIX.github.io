@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    
 
 <head>
     <meta charset="UTF-8">
@@ -132,9 +133,19 @@
                 <a href="#contacto" class="hover:text-primary transition-colors">Contacto</a>
             </nav>
 
-            <div class="desktop-nav flex items-center space-x-4">
-                <a th:href="@{/login}" class="btn-primary">Iniciar Sesion</a>
+            <!-- Mostrar si el usuario NO ha iniciado sesión -->
+            <div class="desktop-nav flex items-center space-x-4" sec:authorize="!isAuthenticated()">
+                <a th:href="@{/login}" class="btn-primary">Iniciar Sesión</a>
             </div>
+
+            <!-- Mostrar si el usuario SÍ ha iniciado sesión -->
+            <div class="desktop-nav flex items-center space-x-4" sec:authorize="isAuthenticated()">
+                <a th:href="@{/usuario}" class="btn-outline">Ver mi perfil</a>
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit" class="btn-primary">Cerrar Sesión</button>
+                </form>
+            </div>
+
 
 
             <button class="md:hidden p-2" onclick="toggleMobileMenu()">
@@ -532,7 +543,8 @@
                         <li><a href="#servicios" class="hover:text-primary transition-colors">Mantenimiento General</a>
                         </li>
                         <li><a href="#servicios" class="hover:text-primary transition-colors">Emergencias 24/7</a></li>
-                        <li><a th:href="@{/registro_tecnicos}" class="hover:text-primary transition-colors">Trabaja con nosotros</a></li>
+                        <li><a th:href="@{/registro_tecnicos}" class="hover:text-primary transition-colors">Trabaja con
+                                nosotros</a></li>
                     </ul>
                 </div>
 
@@ -777,33 +789,43 @@
             if (e.target === modal) closeServiceModal();
         });
 
-        // Envío del formulario
-        form.addEventListener('submit', (e) => {
+        // Envío del formulario conectado al backend
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const payload = {
-                category: document.getElementById('service-category').value,
-                urgency: document.getElementById('service-urgency').value,
-                name: document.getElementById('service-name').value.trim(),
-                phone: document.getElementById('service-phone').value.trim(),
-                address: document.getElementById('service-address').value.trim(),
-                date: document.getElementById('service-date').value || null,
-                description: document.getElementById('service-description').value.trim(),
+                idCliente: 1, // temporal, puedes reemplazarlo por el ID real del cliente logueado
+                idCategoria: document.getElementById('service-category').selectedIndex,
+                descripcion: document.getElementById('service-description').value.trim(),
             };
 
-            // validación mínima
-            if (!payload.category || !payload.urgency || !payload.name || !payload.phone || !payload.address || !payload.description) {
+            // Validación mínima
+            if (!payload.idCategoria || !payload.descripcion) {
                 alert('Por favor completa todos los campos obligatorios.');
                 return;
             }
 
-            // Aquí envías payload al backend o lo procesas como necesites.
-            console.log('Solicitud enviada:', payload);
+            try {
+                const response = await fetch('/api/servicios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
 
-            // feedback al usuario
-            alert('Solicitud enviada con éxito. Nos pondremos en contacto contigo pronto.');
-            closeServiceModal();
+                if (response.ok) {
+                    alert('✅ Solicitud enviada con éxito. Nos pondremos en contacto contigo pronto.');
+                    closeServiceModal();
+                } else {
+                    alert('❌ Ocurrió un error al enviar la solicitud.');
+                }
+            } catch (error) {
+                console.error('Error en el envío:', error);
+                alert('⚠️ No se pudo conectar al servidor.');
+            }
         });
+
     </script>
 </body>
 
