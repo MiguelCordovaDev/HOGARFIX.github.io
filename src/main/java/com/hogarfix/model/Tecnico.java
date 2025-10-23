@@ -55,7 +55,7 @@ public class Tecnico {
     private Date fechaCreacion = new Date();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "clientes_roles", // Cambia a tecnicos_roles en el modelo Tecnico
+    @JoinTable(name = "tecnico_roles", // Cambia a tecnicos_roles en el modelo Tecnico
             joinColumns = @JoinColumn(name = "tecnico_id"), // Cambia a tecnico_id en Tecnico
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;

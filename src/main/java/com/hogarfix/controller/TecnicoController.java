@@ -1,5 +1,7 @@
 package com.hogarfix.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,7 +10,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.hogarfix.model.Categoria;
 import com.hogarfix.model.Tecnico;
+import com.hogarfix.repository.CategoriaRepository;
 import com.hogarfix.service.TecnicoService;
 
 @Controller
@@ -17,10 +21,18 @@ public class TecnicoController {
     @Autowired
     private TecnicoService tecnicoService;
 
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
     // 1. Muestra el formulario de registro de técnicos (ej: registro_tecnicos.html)
     @GetMapping("/registro_tecnicos")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("tecnico", new Tecnico()); 
+        model.addAttribute("tecnico", new Tecnico());
+        List<Categoria> categorias = categoriaRepository.findAll();
+        
+        // 2. Pasar la lista a la vista para el <select>
+        model.addAttribute("categorias", categorias);   // 2. Pasar la lista a la vista para el <select>
+        model.addAttribute("categorias", categorias); 
         return "registro_tecnicos"; // Asume que la vista se llama registro_tecnicos.html
     }
 

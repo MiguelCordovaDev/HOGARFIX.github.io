@@ -17,8 +17,6 @@ public class RegistroController {
  @Autowired
     private ClienteService clienteService;
 
-   
-    
     // Muestra la vista de Registro (registro.html) y crea el objeto para el formulario
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {

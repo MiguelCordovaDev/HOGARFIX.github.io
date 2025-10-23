@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel del Usuario | HogarFix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Animación de subrayado */
+        .tab {
+            position: relative;
+            padding-bottom: 10px;
+            transition: color 0.25s ease;
+        }
+
+        .tab::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background-color: black;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .tab.active::after {
+            width: 100%;
+        }
+
+        .tab:hover::after {
+            width: 100%;
+            background-color: #444;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans min-h-screen">
+
+    <!-- HEADER -->
+    <header class="w-full bg-white border-b shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html#inicio" class="text-2xl font-semibold text-black hover:text-gray-700 transition">
+                🏠 HogarFix
+            </a>
+            <div class="flex items-center gap-3">
+                <button onclick="solicitarServicio()"
+                    class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all shadow-sm hover:shadow-md">
+                    <i data-lucide="plus-circle" class="w-4 h-4 inline mr-1"></i> Solicitar Servicio
+                </button>
+                <button onclick="cerrarSesion()"
+                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-all">
+                    <i data-lucide="log-out" class="w-4 h-4 inline mr-1"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+
+        <!-- PERFIL -->
+        <aside class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all">
+            <div class="flex flex-col items-center">
+                <img src="https://cdn-icons-png.flaticon.com/512/147/147142.png" alt="Usuario"
+                    class="w-24 h-24 rounded-full mb-3 border" />
+                <h2 id="nombreCliente" class="text-lg font-semibold">Cargando...</h2>
+                <p class="text-gray-500 text-sm mb-2" id="emailCliente">---</p>
+                <p class="text-gray-500 text-sm"><i data-lucide="phone" class="inline w-4 h-4 mr-1"></i> <span
+                        id="telefonoCliente">---</span></p>
+                <p class="text-gray-500 text-sm"><i data-lucide="map-pin" class="inline w-4 h-4 mr-1"></i> <span
+                        id="direccionCliente">---</span></p>
+                <p id="fechaCliente" class="text-gray-500 text-sm mb-2"></p>
+
+
+            </div>
+
+            <div class="mt-4 text-gray-600 text-sm space-y-2 w-full">
+                <p><i data-lucide="mail" class="inline w-4 h-4 mr-1"></i> maria.gonzalez@hogarfix.com</p>
+                <p><i data-lucide="phone" class="inline w-4 h-4 mr-1"></i> +51 954 321 678</p>
+                <p><i data-lucide="map-pin" class="inline w-4 h-4 mr-1"></i> Lima, Perú</p>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 text-center">
+                <div>
+                    <p class="text-2xl font-bold text-black">12</p>
+                    <p class="text-gray-500 text-sm">Servicios solicitados</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-black">9</p>
+                    <p class="text-gray-500 text-sm">Servicios completados</p>
+                </div>
+            </div>
+        </aside>
+
+        
+
+
+        <!-- PANEL DE SERVICIOS -->
+        <section class="md:col-span-2 bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all">
+            <div class="mb-3">
+                <h2 class="text-lg font-semibold flex items-center gap-2">
+                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                    Resumen de tus servicios
+                </h2>
+                <p class="text-sm text-gray-500">Consulta y gestiona tus servicios según su estado.</p>
+            </div>
+
+            <!-- TABS -->
+            <div class="flex justify-between border-b mb-4 text-sm font-medium text-gray-600">
+                <button id="tabPendientes" class="tab active text-black">
+                    Servicios solicitados <span id="countPend"
+                        class="ml-1 bg-gray-200 px-2 py-0.5 rounded text-xs">0</span>
+                </button>
+                <button id="tabEnProceso" class="tab">
+                    En curso <span id="countProc" class="ml-1 bg-gray-100 px-2 py-0.5 rounded text-xs">0</span>
+                </button>
+                <button id="tabCompletadas" class="tab">
+                    Finalizados <span id="countComp" class="ml-1 bg-gray-100 px-2 py-0.5 rounded text-xs">0</span>
+                </button>
+            </div>
+
+            <!-- CONTENEDOR DE SOLICITUDES -->
+            <div id="contenedorSolicitudes" class="space-y-4"></div>
+        </section>
+    </main>
+
+    <!-- MODAL CALIFICAR -->
+    <div id="modalCalificar" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative fade-in">
+            <button id="btnCerrarModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h2 class="text-lg font-semibold mb-2 flex items-center gap-2">
+                <i data-lucide="star" class="w-5 h-5 text-yellow-500"></i> Calificar técnico
+            </h2>
+            <p class="text-gray-500 text-sm mb-4">Evalúa el servicio recibido para ayudar a otros usuarios.</p>
+
+            <form id="formCalificacion" class="space-y-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">Técnico</label>
+                    <input type="text" id="nombreTecnico" readonly
+                        class="w-full border rounded px-3 py-2 bg-gray-100" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">Calificación</label>
+                    <select id="puntaje" class="w-full border rounded px-3 py-2">
+                        <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+                        <option value="4">⭐⭐⭐⭐ Muy bueno</option>
+                        <option value="3">⭐⭐⭐ Bueno</option>
+                        <option value="2">⭐⭐ Regular</option>
+                        <option value="1">⭐ Malo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600">Comentario</label>
+                    <textarea id="comentario" maxlength="300" rows="3"
+                        class="w-full border rounded px-3 py-2"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button" id="btnCancelar"
+                        class="px-4 py-2 border rounded hover:bg-gray-100 transition">Cancelar</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const solicitudes = [
+            { id: 1, tecnico: "Carlos Mendoza", tipo: "Plomería", fecha: "10/10/2025", descripcion: "Fuga debajo del lavadero.", estado: "pendiente" },
+            { id: 2, tecnico: "Juan López", tipo: "Electricidad", fecha: "15/10/2025", descripcion: "Instalar enchufe doble.", estado: "proceso" },
+            { id: 3, tecnico: "Luis Pérez", tipo: "Pintura", fecha: "05/10/2025", descripcion: "Pintar dormitorio principal.", estado: "completada" }
+        ];
+
+        const contenedor = document.getElementById("contenedorSolicitudes");
+        const modal = document.getElementById("modalCalificar");
+        const nombreTecnico = document.getElementById("nombreTecnico");
+
+        function actualizarContadores() {
+            document.getElementById("countPend").textContent = solicitudes.filter(s => s.estado === "pendiente").length;
+            document.getElementById("countProc").textContent = solicitudes.filter(s => s.estado === "proceso").length;
+            document.getElementById("countComp").textContent = solicitudes.filter(s => s.estado === "completada").length;
+        }
+
+        function render(estado) {
+            contenedor.classList.add("fade-in");
+            setTimeout(() => contenedor.classList.remove("fade-in"), 300);
+            contenedor.innerHTML = "";
+
+            solicitudes.filter(s => s.estado === estado).forEach(s => {
+                const card = document.createElement("div");
+                card.className = "p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 transition shadow-sm hover:shadow-md";
+                card.innerHTML = `
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <h3 class="font-semibold">${s.tipo}</h3>
+              <p class="text-sm text-gray-500">👷 Técnico: ${s.tecnico}</p>
+              <p class="text-xs text-gray-400">📅 ${s.fecha}</p>
+            </div>
+            ${estado === "pendiente" ?
+                        `<button class="px-3 py-1 border rounded text-sm hover:bg-gray-200 transition">Cancelar solicitud</button>` :
+                        estado === "proceso" ?
+                            `<button class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm transition">Ver progreso</button>` :
+                            `<div class="flex flex-col gap-2">
+                <button onclick="abrirModal('${s.tecnico}')" class="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 text-sm transition">Calificar</button>
+                <button onclick="pagarServicio(${s.id})" class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm transition">Pagar servicio</button>
+              </div>`
+                    }
+          </div>
+          <p class="text-gray-600 text-sm">${s.descripcion}</p>
+        `;
+                contenedor.appendChild(card);
+            });
+            lucide.createIcons();
+            actualizarContadores();
+        }
+
+        function abrirModal(tecnico) {
+            nombreTecnico.value = tecnico;
+            modal.classList.remove("hidden");
+        }
+
+        function pagarServicio(id) {
+            alert(`Redirigiendo al módulo de pago para el servicio N° ${id} 💳`);
+        }
+
+        document.getElementById("formCalificacion").onsubmit = (e) => {
+            e.preventDefault();
+            modal.classList.add("hidden");
+            alert("Gracias por calificar 😊");
+        };
+
+        document.getElementById("btnCancelar").onclick = () => modal.classList.add("hidden");
+        document.getElementById("btnCerrarModal").onclick = () => modal.classList.add("hidden");
+
+        function cerrarSesion() { window.location.href = "index.html"; }
+        function solicitarServicio() { alert("Función para solicitar un nuevo servicio próximamente 🔧"); }
+
+        document.getElementById("tabPendientes").onclick = () => activarTab("pendiente");
+        document.getElementById("tabEnProceso").onclick = () => activarTab("proceso");
+        document.getElementById("tabCompletadas").onclick = () => activarTab("completada");
+
+        function activarTab(estado) {
+            document.querySelectorAll(".tab").forEach(btn => btn.classList.remove("active", "text-black"));
+            if (estado === "pendiente") document.getElementById("tabPendientes").classList.add("active", "text-black");
+            if (estado === "proceso") document.getElementById("tabEnProceso").classList.add("active", "text-black");
+            if (estado === "completada") document.getElementById("tabCompletadas").classList.add("active", "text-black");
+            render(estado);
+        }
+
+        activarTab("pendiente");
+    </script>
+</body>
+
+</html>

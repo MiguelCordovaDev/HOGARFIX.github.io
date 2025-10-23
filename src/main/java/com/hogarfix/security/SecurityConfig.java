@@ -25,7 +25,7 @@ public class SecurityConfig {
                         // Rutas Estáticas y de la Web (Públicas)
                         .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**", "/registro_tecnicos",
                                 "/login_tecnicos", "/tecnico/registro", "/index.html", "/pagos", "/register", "/login",
-                                "/tecnicos", "/cliente/registro")
+                                "/tecnicos", "/paginatecnicos","/cliente/registro")
                         .permitAll()
 
                         .requestMatchers("/api/**").permitAll()
@@ -36,11 +36,13 @@ public class SecurityConfig {
                 .formLogin(form -> form
 
                         .loginPage("/login")
-                        .permitAll())
+                        .loginProcessingUrl("/login")
+                        .permitAll()
+                        )
 
                 .formLogin(form -> form
                         .loginPage("/login_tecnicos")
-                        .loginProcessingUrl("/login_tecnicos") // <--- Usará el proveedor 2 (Técnicos)
+                         // <--- Usará el proveedor 2 (Técnicos)
                 )
                 
                 // 4. Configura el logout

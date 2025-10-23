@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     
     // Método para evitar categorías duplicadas
-    boolean existsByNombre(String nombre);
+   
 }

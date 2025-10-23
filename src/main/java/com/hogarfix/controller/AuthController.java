@@ -19,14 +19,15 @@ public class AuthController {
         return "pagos"; // 
     }
     
+    @GetMapping("/paginatecnicos")
+    public String Pagetecnicos() {
+        return "pagtecnicos"; // 
+    }
+
     @GetMapping("/tecnicos")
     public String showtecnicos() {
         return "tecnicos"; // 
     }
-
-   
-
-    
 
 }
 
