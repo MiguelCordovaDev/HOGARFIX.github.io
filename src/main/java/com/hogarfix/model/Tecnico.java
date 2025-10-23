@@ -2,159 +2,64 @@ package com.hogarfix.model;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import java.util.List;
 
-import java.util.Collection;
-import java.util.Date;
+import com.hogarfix.model.base.Auditable;
 
 @Entity
-@Table(name = "tb_tecnico")
-public class Tecnico {
+@Table(name = "tbl_tecnico")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Tecnico extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idTecnico;
 
-    @Column(name = "nombre", length = 100, nullable = false)
-    private String nombre;
+    @Column(nullable = false, length = 100)
+    private String nombres;
 
-    @Column(name = "apellido", length = 100, nullable = false)
-    private String apellido;
+    @Column(nullable = false, length = 100)
+    private String apellidoPaterno;
 
-    @Column(name = "telefono", length = 15)
-    private String telefono;
+    @Column(length = 100)
+    private String apellidoMaterno;
 
-    @Column(name = "direccion", length = 255)
-    private String direccion;
+    @Column(nullable = false, length = 20)
+    private String dni;
 
-    @Column(name = "idCiudad")
-    private Long idCiudad; // Asumimos la relación con tb_ciudad
+    @Column(nullable = false, length = 255)
+    private String certificadoPdf; // ruta o nombre del archivo del certificado
 
-    @Column(name = "idCategoria")
-    private Long idCategoria; // Asumimos la categoría principal de especialización
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "idDireccion", nullable = false)
+    private Direccion direccion;
 
-    @Column(name = "email", length = 100, nullable = false, unique = true)
-    private String email;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUsuario", nullable = false)
+    private Usuario usuario;
 
-    @Column(name = "password", length = 100, nullable = false)
-    private String password; // NOTA: En un proyecto real, esto debe ser hasheado
+    @OneToMany(mappedBy = "tecnico", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TecnicoCategoria> categorias;
 
-    @Column(name = "isActive")
-    private Boolean isActive = true;
-
-    // Campos de auditoría (asumidos del diagrama)
-    @Column(name = "fechaCreacion")
-    private Date fechaCreacion = new Date();
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "tecnico_roles", // Cambia a tecnicos_roles en el modelo Tecnico
-            joinColumns = @JoinColumn(name = "tecnico_id"), // Cambia a tecnico_id en Tecnico
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
-
-    // --- Getters y Setters ---
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public Long getIdCiudad() {
-        return idCiudad;
-    }
-
-    public void setIdCiudad(Long idCiudad) {
-        this.idCiudad = idCiudad;
-    }
-
-    public Long getIdCategoria() {
-        return idCategoria;
-    }
-
-    public void setIdCategoria(Long idCategoria) {
-        this.idCategoria = idCategoria;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public Date getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
+    @Builder.Default
+    @Column(name = "promedio_calificacion")
+    private Double promedioCalificacion = 0.0;
 }

@@ -1,64 +1,85 @@
 package com.hogarfix.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.hogarfix.model.Categoria;
+import com.hogarfix.model.Servicio;
 import com.hogarfix.model.Tecnico;
-import com.hogarfix.repository.CategoriaRepository;
+import com.hogarfix.service.ServicioService;
 import com.hogarfix.service.TecnicoService;
+import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequiredArgsConstructor
+@RequestMapping("/tecnicos")
 public class TecnicoController {
 
-    @Autowired
-    private TecnicoService tecnicoService;
+    private final TecnicoService tecnicoService;
+    private final ServicioService servicioService; // ✅ Se inyecta correctamente
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    @GetMapping
+    public String listarTecnicos(Model model) {
+        List<Tecnico> tecnicos = tecnicoService.listarTecnicos();
+        model.addAttribute("tecnicos", tecnicos);
+        return "tecnicos/lista";
+    }
 
-    // 1. Muestra el formulario de registro de técnicos (ej: registro_tecnicos.html)
-    @GetMapping("/registro_tecnicos")
-    public String showRegistrationForm(Model model) {
+    @GetMapping("/registro")
+    public String mostrarFormularioRegistro(Model model) {
         model.addAttribute("tecnico", new Tecnico());
-        List<Categoria> categorias = categoriaRepository.findAll();
-        
-        // 2. Pasar la lista a la vista para el <select>
-        model.addAttribute("categorias", categorias);   // 2. Pasar la lista a la vista para el <select>
-        model.addAttribute("categorias", categorias); 
-        return "registro_tecnicos"; // Asume que la vista se llama registro_tecnicos.html
+        return "tecnicos/registro";
     }
 
-    // 2. Procesa el formulario POST
-    @PostMapping("/tecnico/registro") // Se puede usar una URL específica
-    public String registerTecnico(@ModelAttribute("tecnico") Tecnico tecnico, RedirectAttributes redirectAttributes) {
-        
-        if (tecnicoService.existsByEmail(tecnico.getEmail())) {
-            redirectAttributes.addFlashAttribute("error", "El email ya está registrado como técnico.");
-            return "redirect:/registro_tecnicos"; 
+    @PostMapping("/registro")
+    public String registrarTecnico(@ModelAttribute Tecnico tecnico,
+            @RequestParam("certificadoPdf") MultipartFile archivo) throws IOException {
+
+        if (!archivo.isEmpty()) {
+            String nombreArchivo = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
+            Path rutaArchivo = Paths.get("src/main/resources/static/uploads/certificados/" + nombreArchivo);
+            Files.createDirectories(rutaArchivo.getParent());
+            archivo.transferTo(rutaArchivo.toFile());
+            tecnico.setCertificadoPdf(nombreArchivo);
         }
-        
-        try {
-            tecnicoService.saveTecnico(tecnico);
-            redirectAttributes.addFlashAttribute("success", "Registro de técnico exitoso. ¡Ahora puedes iniciar sesión!");
-            return "redirect:/login_tecnicos"; // Redirigir al login de técnicos
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Ocurrió un error al registrar el técnico.");
-            return "redirect:/registro_tecnicos";
-        }
+
+        tecnicoService.registrarTecnico(tecnico);
+        return "redirect:/login?registro=exitoso";
     }
-    
-    // 3. Muestra el formulario de Login de Técnicos (login_tecnicos.html)
-    @GetMapping("/login_tecnicos")
-    public String loginTecnicos() {
-        // Muestra una vista de login específica para técnicos, si la tienes.
-        return "login_tecnicos"; 
+
+    @GetMapping("/certificados/{nombreArchivo}")
+    public ResponseEntity<Resource> verCertificado(@PathVariable String nombreArchivo) throws IOException {
+        Path archivoPath = Paths.get("uploads/certificados/").resolve(nombreArchivo).normalize();
+        Resource recurso = new UrlResource(archivoPath.toUri());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nombreArchivo + "\"")
+                .body(recurso);
+    }
+
+    @GetMapping("/panel")
+    public String panelTecnico(Model model, Principal principal) {
+        Tecnico tecnico = tecnicoService.obtenerPorEmail(principal.getName());
+        List<Servicio> servicios = servicioService.obtenerPorTecnico(tecnico.getIdTecnico());
+
+        model.addAttribute("tecnico", tecnico);
+        model.addAttribute("servicios", servicios);
+        return "tecnico/panel";
     }
 }

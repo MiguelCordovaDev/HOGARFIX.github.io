@@ -2,95 +2,54 @@ package com.hogarfix.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
+
+import com.hogarfix.model.base.Auditable;
 
 @Entity
-@Table(name = "tb_pago")
-public class Pago {
+@Table(name = "tbl_pago")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Pago extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idPago;
 
-    @Column(name = "idServicio", nullable = false)
-    private Long idServicio; // FK: El servicio que se está pagando
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idServicio", nullable = false)
+    private Servicio servicio;
 
-    @Column(name = "monto", nullable = false)
-    private BigDecimal monto; // Monto de la transacción
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCliente", nullable = false)
+    private Cliente cliente;
 
-    @Column(name = "fechaPago", nullable = false)
-    private Date fechaPago = new Date();
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal monto;
 
-    @Column(name = "metodoPago", length = 50, nullable = false)
-    private String metodoPago; // Ej: 'Tarjeta Crédito', 'Transferencia'
+    @Column(nullable = false, length = 30)
+    private String metodoPago; // tarjeta, efectivo, transferencia, etc.
 
-    @Column(name = "referenciaTransaccion", length = 100, unique = true)
-    private String referenciaTransaccion; // Identificador único del banco/pasarela
+    @Column(nullable = false)
+    private LocalDateTime fechaPago;
 
-    @Column(name = "estado", length = 50, nullable = false)
-    private String estado = "COMPLETADO"; // Ej: PENDIENTE, COMPLETADO, FALLIDO
-
-    // --- Getters y Setters ---
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getIdServicio() {
-        return idServicio;
-    }
-
-    public void setIdServicio(Long idServicio) {
-        this.idServicio = idServicio;
-    }
-
-    public BigDecimal getMonto() {
-        return monto;
-    }
-
-    public void setMonto(BigDecimal monto) {
-        this.monto = monto;
-    }
-
-    public Date getFechaPago() {
-        return fechaPago;
-    }
-
-    public void setFechaPago(Date fechaPago) {
-        this.fechaPago = fechaPago;
-    }
-
-    public String getMetodoPago() {
-        return metodoPago;
-    }
-
-    public void setMetodoPago(String metodoPago) {
-        this.metodoPago = metodoPago;
-    }
-
-    public String getReferenciaTransaccion() {
-        return referenciaTransaccion;
-    }
-
-    public void setReferenciaTransaccion(String referenciaTransaccion) {
-        this.referenciaTransaccion = referenciaTransaccion;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
+    @Column(nullable = false, length = 30)
+    private String estado; // PAGADO, PENDIENTE, CANCELADO
 }

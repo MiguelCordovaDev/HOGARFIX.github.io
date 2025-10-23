@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/head :: head('Dashboard Admin')"></head>
+  <body>
+    <header th:replace="fragments/navbar :: navbar"></header>
+
+    <div class="container my-5">
+      <h2 class="text-center mb-4">Panel de Administración</h2>
+
+      <div class="row text-center">
+        <div class="col-md-4 mb-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h5>Clientes</h5>
+              <p
+                class="display-6 fw-bold text-primary"
+                th:text="${clientesCount}"
+              >
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h5>Técnicos</h5>
+              <p
+                class="display-6 fw-bold text-success"
+                th:text="${tecnicosCount}"
+              >
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-body">
+              <h5>Servicios Activos</h5>
+              <p
+                class="display-6 fw-bold text-warning"
+                th:text="${serviciosCount}"
+              >
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+  </body>
+</html>

@@ -1,54 +1,45 @@
 package com.hogarfix.service;
 
-import java.util.Collections;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.hogarfix.dto.ERole;
 import com.hogarfix.model.Cliente;
-import com.hogarfix.model.Role;
 import com.hogarfix.repository.ClienteRepository;
-import com.hogarfix.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder; 
+    private final ClienteRepository clienteRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    /**
-     * 1. Verifica si el email ya existe.
-     * 2. Encripta la contraseña antes de guardar.
-     * 3. Guarda el nuevo cliente en la BD.
-     */
-    public Cliente saveCliente(Cliente cliente) {
-        // Encriptar la contraseña (¡Obligatorio para Spring Security!)
-
-        Role roleCliente = roleRepository.findByName(ERole.ROLE_CLIENTE);
-        if (roleCliente == null) {
-            throw new RuntimeException("Error: El rol ROLE_CLIENTE no existe en la BD. Ejecuta la inicialización de roles.");
+    // Registro con validación de email duplicado
+    public Cliente registrarCliente(Cliente cliente) {
+        if (clienteRepository.existsByUsuario_Email(cliente.getUsuario().getEmail())) {
+            throw new RuntimeException("El correo ya está registrado");
         }
-        // Asigna el rol al cliente
-        cliente.setRoles(Collections.singletonList(roleCliente));
-        
-        cliente.setPassword(passwordEncoder.encode(cliente.getPassword()));
-        
-        // Guardar en la base de datos
+
+        cliente.getUsuario().setPassword(passwordEncoder.encode(cliente.getUsuario().getPassword()));
         return clienteRepository.save(cliente);
     }
-    
-    /**
-     * Verifica si un email ya existe antes de registrarlo.
-     */
-    public boolean existsByEmail(String email) {
-        return clienteRepository.findByEmail(email).isPresent();
+
+    // Autenticación simple
+    public Optional<Cliente> autenticar(String email, String password) {
+        return clienteRepository.findByUsuario_Email(email)
+                .filter(c -> passwordEncoder.matches(password, c.getUsuario().getPassword()));
+    }
+
+    public List<Cliente> listarClientes() {
+        return clienteRepository.findAll();
+    }
+
+    public Optional<Cliente> buscarPorId(Long id) {
+        return clienteRepository.findById(id);
+    }
+
+    public void eliminarCliente(Long id) {
+        clienteRepository.deleteById(id);
     }
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/head :: head('Registro Cliente')"></head>
+  <body>
+    <header th:replace="fragments/navbar :: navbar"></header>
+
+    <div class="container my-5">
+      <h2 class="text-center mb-4">Registro de Cliente</h2>
+
+      <form
+        th:action="@{/clientes/registro}"
+        th:object="${cliente}"
+        method="post"
+        class="card shadow p-4"
+      >
+        <div
+          th:if="${error}"
+          class="alert alert-danger"
+          th:text="${error}"
+        ></div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombres</label>
+            <input
+              type="text"
+              th:field="*{nombres}"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Apellidos</label>
+            <input
+              type="text"
+              th:field="*{apellidos}"
+              class="form-control"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Correo electrónico</label>
+            <input
+              type="email"
+              th:field="*{email}"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input
+              type="tel"
+              th:field="*{telefono}"
+              class="form-control"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">
+          Registrar Cliente
+        </button>
+      </form>
+    </div>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+  </body>
+</html>

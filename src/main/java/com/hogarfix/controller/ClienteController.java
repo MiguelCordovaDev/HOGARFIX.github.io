@@ -2,24 +2,40 @@ package com.hogarfix.controller;
 
 import com.hogarfix.model.Cliente;
 import com.hogarfix.service.ClienteService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-import java.util.Map;
-
-// Controlador para gestionar las amas de casa (Clientes) (MVC)
-@RestController
-@RequestMapping("/api/clientes")
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/clientes")
 public class ClienteController {
 
     private final ClienteService clienteService;
 
-    @Autowired
-    public ClienteController(ClienteService clienteService) {
-        this.clienteService = clienteService;
+    @GetMapping
+    public String listarClientes(Model model) {
+        List<Cliente> clientes = clienteService.listarClientes();
+        model.addAttribute("clientes", clientes);
+        return "clientes/lista";
     }
 
-    
+    @GetMapping("/registro")
+    public String mostrarFormularioRegistro(Model model) {
+        model.addAttribute("cliente", new Cliente());
+        return "clientes/registro";
+    }
+
+    @PostMapping("/registro")
+    public String registrarCliente(@ModelAttribute Cliente cliente, Model model) {
+        try {
+            clienteService.registrarCliente(cliente);
+            return "redirect:/clientes?success";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            return "clientes/registro";
+        }
+    }
 }

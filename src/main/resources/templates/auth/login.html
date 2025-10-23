@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HogarFix - Iniciar Sesión</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+        background-color: #1a1a2e;
+      }
+    </style>
+  </head>
+  <body
+    class="flex items-center justify-center min-h-screen bg-gray-900 text-gray-800"
+  >
+    <div
+      class="relative flex max-w-4xl w-full mx-4 rounded-3xl overflow-hidden shadow-2xl bg-white"
+    >
+      <!-- Contenedor del formulario -->
+      <div
+        class="w-full lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center"
+      >
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          INICIAR SESIÓN
+        </h1>
+        <p class="text-gray-600 text-sm mb-8">
+          Ingresa para solicitar servicios fácilmente
+        </p>
+
+        <!-- Mensajes de error y logout -->
+        <div
+          th:if="${param.error}"
+          class="p-3 mb-4 text-sm font-medium text-red-800 bg-red-100 rounded-lg shadow-md"
+        >
+          Credenciales inválidas. Por favor, inténtalo de nuevo.
+        </div>
+        <div
+          th:if="${param.logout}"
+          class="p-3 mb-4 text-sm font-medium text-green-800 bg-green-100 rounded-lg shadow-md"
+        >
+          Has cerrado sesión exitosamente.
+        </div>
+
+        <!-- Formulario de login -->
+        <form
+          id="loginForm"
+          th:action="@{/auth/login}"
+          method="post"
+          class="space-y-6"
+        >
+          <!-- Username -->
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              placeholder="Nombre de usuario"
+              class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 15a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v6a2 2 0 01-2 2h-4z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 15v2a3 3 0 01-3 3H9a3 3 0 01-3-3v-2"
+                />
+              </svg>
+            </div>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Contraseña"
+              class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <!-- Botón -->
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white font-bold py-3 rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Iniciar sesión
+          </button>
+        </form>
+
+        <!-- Registro -->
+        <div class="text-center mt-6 text-sm space-y-2">
+          <span class="text-gray-500 block">¿Aún no tienes cuenta?</span>
+
+          <div class="flex justify-center space-x-4">
+            <a
+              th:href="@{/clientes/registro}"
+              class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition"
+            >
+              Soy Cliente
+            </a>
+
+            <a
+              th:href="@{/tecnicos/registro}"
+              class="bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition"
+            >
+              Soy Técnico
+            </a>
+          </div>
+        </div>
+
+        <!-- O inicia sesión con -->
+        <div class="flex items-center my-6">
+          <hr class="flex-grow border-t border-gray-300" />
+          <span class="px-3 text-gray-500">O inicia sesión con</span>
+          <hr class="flex-grow border-t border-gray-300" />
+        </div>
+
+        <!-- Botones sociales -->
+        <div class="space-y-4">
+          <!-- Google -->
+          <button
+            class="flex items-center justify-center w-full py-3 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+          >
+            <svg
+              class="h-5 w-5 mr-3"
+              viewBox="0 0 48 48"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M44.5 20H24V28.8H35.4C34.7 32.7 31.9 35.8 28.2 37.8L35 43.4C40 38.6 43.1 31.6 44.5 24.3V20Z"
+                fill="#4285F4"
+              />
+              <path
+                d="M24 45.9C30.6 45.9 36.1 43.8 40.2 40.2L32.6 34.3C30.5 35.8 27.5 36.7 24 36.7C19.2 36.7 15 33.5 13.5 29.1L6.7 34.4C9.5 39.8 16.2 45.9 24 45.9Z"
+                fill="#34A853"
+              />
+              <path
+                d="M13.5 29.1C13.2 28.1 13 27.1 13 26C13 24.9 13.2 23.9 13.5 22.9L6.7 17.6C6.1 19.3 5.8 21.1 5.8 23C5.8 24.9 6.1 26.7 6.7 28.4L13.5 29.1Z"
+                fill="#FBBC05"
+              />
+              <path
+                d="M24 15.3C27.6 15.3 30.8 16.6 33.3 19.1L40.2 12.2C36.1 8.5 30.6 6.4 24 6.4C16.2 6.4 9.5 12.5 6.7 17.6L13.5 22.9C15 18.5 19.2 15.3 24 15.3Z"
+                fill="#EA4335"
+              />
+            </svg>
+            <span class="text-gray-700 font-semibold"
+              >Iniciar sesión con Google</span
+            >
+          </button>
+
+          <!-- Facebook -->
+          <button
+            class="flex items-center justify-center w-full py-3 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg"
+              alt="Facebook Logo"
+              class="h-5 w-5 mr-3"
+            />
+            <span class="text-gray-700 font-semibold"
+              >Iniciar sesión con Facebook</span
+            >
+          </button>
+        </div>
+      </div>
+
+      <!-- Lado derecho (imagen) -->
+      <div
+        class="hidden lg:flex w-1/2 relative bg-purple-600 bg-opacity-70 backdrop-blur-md items-center justify-center p-8 rounded-3xl"
+        style="
+          background-image: url('/images/login-background.svg');
+          background-size: cover;
+          background-position: center;
+        "
+      >
+        <div
+          class="relative z-10 text-white text-center p-8 rounded-3xl backdrop-blur-xl bg-white bg-opacity-10"
+        >
+          <h2 class="text-3xl font-bold mb-4">
+            ¡Inicia sesión y recibe la ayuda que necesitas en casa!
+          </h2>
+          <div class="w-full relative">
+            <img
+              th:src="@{/images/logo.png}"
+              alt="Imagen de técnico sonriendo"
+              class="w-full h-auto rounded-xl"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script th:src="@{/js/loginScript.js}"></script>
+  </body>
+</html>

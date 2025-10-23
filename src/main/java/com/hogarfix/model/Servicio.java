@@ -1,141 +1,74 @@
 package com.hogarfix.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import java.util.List;
+import com.hogarfix.model.base.Auditable;
 import java.math.BigDecimal;
-
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_servicio")
-public class Servicio {
+@Table(name = "tbl_servicio")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Servicio extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idServicio;
 
-    @Column(name = "idCliente", nullable = false)
-    private Long idCliente; 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCliente", nullable = false)
+    private Cliente cliente;
 
-    @Column(name = "idTecnico")
-    private Long idTecnico; 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idTecnico", nullable = false)
+    private Tecnico tecnico;
 
-    @Column(name = "idCategoria", nullable = false)
-    private Long idCategoria; 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCategoria", nullable = false)
+    private Categoria categoria;
 
-    @Column(name = "descripcion", columnDefinition = "TEXT")
+    @Column(nullable = false, length = 255)
     private String descripcion;
 
-    @Column(name = "fechaSolicitud", nullable = false)
-    private Date fechaSolicitud = new Date();
+    @Column(nullable = false)
+    private BigDecimal monto;
 
-    @Column(name = "fechaAsignacion")
-    private Date fechaAsignacion;
+    @Column(nullable = false, length = 30)
+    private String estado; // ejemplo: "PENDIENTE", "EN_PROCESO", "FINALIZADO"
 
-    @Column(name = "fechaCierre")
-    private Date fechaCierre;
+    private LocalDateTime fechaSolicitud;
+    private LocalDateTime fechaFinalizacion;
 
-    @Column(name = "estado", length = 50, nullable = false)
-    private String estado = "PENDIENTE"; 
+    @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL)
+    private Pago pago;
 
-    @Column(name = "costoEstimado")
-    private BigDecimal costoEstimado;
+    @OneToMany(mappedBy = "servicio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentarios;
 
-    @Column(name = "calificacionCliente")
-    private Integer calificacionCliente;
+    @OneToMany(mappedBy = "servicio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Calificacion> calificaciones;
 
-    
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getIdCliente() {
-        return idCliente;
-    }
-
-    public void setIdCliente(Long idCliente) {
-        this.idCliente = idCliente;
-    }
-
-    public Long getIdTecnico() {
-        return idTecnico;
-    }
-
-    public void setIdTecnico(Long idTecnico) {
-        this.idTecnico = idTecnico;
-    }
-
-    public Long getIdCategoria() {
-        return idCategoria;
-    }
-
-    public void setIdCategoria(Long idCategoria) {
-        this.idCategoria = idCategoria;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Date getFechaSolicitud() {
-        return fechaSolicitud;
-    }
-
-    public void setFechaSolicitud(Date fechaSolicitud) {
-        this.fechaSolicitud = fechaSolicitud;
-    }
-
-    public Date getFechaAsignacion() {
-        return fechaAsignacion;
-    }
-
-    public void setFechaAsignacion(Date fechaAsignacion) {
-        this.fechaAsignacion = fechaAsignacion;
-    }
-
-    public Date getFechaCierre() {
-        return fechaCierre;
-    }
-
-    public void setFechaCierre(Date fechaCierre) {
-        this.fechaCierre = fechaCierre;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public BigDecimal getCostoEstimado() {
-        return costoEstimado;
-    }
-
-    public void setCostoEstimado(BigDecimal costoEstimado) {
-        this.costoEstimado = costoEstimado;
-    }
-
-    public Integer getCalificacionCliente() {
-        return calificacionCliente;
-    }
-
-    public void setCalificacionCliente(Integer calificacionCliente) {
-        this.calificacionCliente = calificacionCliente;
-    }
+    @Builder.Default
+    @Column(name = "num_solicitudes")
+    private Integer numSolicitudes = 0;
 }

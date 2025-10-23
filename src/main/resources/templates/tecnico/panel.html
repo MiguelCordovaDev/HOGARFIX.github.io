@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/head :: head('Panel Técnico')"></head>
+  <body>
+    <header th:replace="fragments/navbar :: navbar"></header>
+
+    <div class="container my-5">
+      <h2 class="text-center mb-4">Panel del Técnico</h2>
+
+      <div class="card shadow-sm p-4 mb-4">
+        <h4>
+          Bienvenido,
+          <span
+            th:text="${tecnico.nombres} + ' ' + ${tecnico.apellidoPaterno}"
+          ></span>
+        </h4>
+        <p><strong>DNI:</strong> <span th:text="${tecnico.dni}"></span></p>
+        <p>
+          <strong>Certificado:</strong>
+          <a
+            th:href="@{/tecnicos/certificados/{file}(file=${tecnico.certificadoPdf})}"
+            target="_blank"
+          >
+            Ver PDF
+          </a>
+        </p>
+      </div>
+
+      <h5 class="mt-4">Servicios asignados</h5>
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Servicio</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="servicio, iter : ${servicios}">
+            <td th:text="${iter.index + 1}"></td>
+            <td th:text="${servicio.nombre}"></td>
+            <td th:text="${servicio.cliente.nombres}"></td>
+            <td th:text="${servicio.estado}"></td>
+            <td
+              th:text="${#temporals.format(servicio.fechaRegistro, 'dd/MM/yyyy')}"
+            ></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer th:replace="fragments/footer :: footer"></footer>
+  </body>
+</html>

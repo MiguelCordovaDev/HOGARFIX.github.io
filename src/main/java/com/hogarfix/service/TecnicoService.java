@@ -1,49 +1,50 @@
 package com.hogarfix.service;
 
-import java.util.Collections;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.hogarfix.dto.ERole;
-import com.hogarfix.model.Role;
 import com.hogarfix.model.Tecnico;
-import com.hogarfix.repository.RoleRepository;
 import com.hogarfix.repository.TecnicoRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class TecnicoService {
 
-    @Autowired
-    private TecnicoRepository tecnicoRepository;
-    
-    @Autowired
-    private PasswordEncoder passwordEncoder; 
+    private final TecnicoRepository tecnicoRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    public Tecnico registrarTecnico(Tecnico tecnico) {
+        if (tecnicoRepository.existsByUsuario_Email(tecnico.getUsuario().getEmail())) {
+            throw new RuntimeException("El correo ya está registrado");
+        }
 
-    public Tecnico saveTecnico(Tecnico tecnico) {
-        if (existsByEmail(tecnico.getEmail())) {
-            throw new RuntimeException("El email ya está registrado como técnico.");
-        }
-        
-        // 1. BUSCAR Y ASIGNAR EL ROL: ROLE_TECNICO
-        Role roleTecnico = roleRepository.findByName(ERole.ROLE_TECNICO);
-        if (roleTecnico == null) {
-            throw new RuntimeException("Error: El rol ROLE_TECNICO no existe en la BD. Ejecuta la inicialización de roles.");
-        }
-        // Asigna el rol al técnico
-        tecnico.setRoles(Collections.singletonList(roleTecnico));
-        
-        tecnico.setPassword(passwordEncoder.encode(tecnico.getPassword()));
-        
-        // 2. Guardar en la base de datos
+        tecnico.getUsuario().setPassword(passwordEncoder.encode(tecnico.getUsuario().getPassword()));
         return tecnicoRepository.save(tecnico);
     }
-    
-    public boolean existsByEmail(String email) {
-        return tecnicoRepository.findByEmail(email).isPresent();
+
+    public List<Tecnico> listarTecnicos() {
+        return tecnicoRepository.findAll();
     }
+
+    public Optional<Tecnico> buscarPorId(Long id) {
+        return tecnicoRepository.findById(id);
+    }
+
+    public List<Tecnico> buscarPorCategoria(String categoria) {
+        return tecnicoRepository.findTecnicosByCategoriaNombre(categoria);
+    }
+
+    public Optional<Tecnico> autenticar(String email, String password) {
+        return tecnicoRepository.findByUsuario_Email(email)
+                .filter(t -> passwordEncoder.matches(password, t.getUsuario().getPassword()));
+    }
+
+    public Tecnico obtenerPorEmail(String email) {
+        return tecnicoRepository.findByUsuario_Email(email)
+                .orElseThrow(() -> new RuntimeException("No se encontró el técnico con email: " + email));
+    }
+
 }
