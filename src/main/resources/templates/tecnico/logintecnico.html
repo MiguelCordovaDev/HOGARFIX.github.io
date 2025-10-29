@@ -23,11 +23,11 @@
     class="flex items-center justify-center min-h-screen bg-gray-900 text-gray-800"
   >
     <div
-      class="relative flex max-w-4xl w-full mx-4 rounded-3xl overflow-hidden shadow-2xl bg-white"
+      class="relative flex max-w-6xl w-full mx-6 rounded-3xl overflow-hidden shadow-2xl bg-white"
     >
-      <!-- Contenedor del formulario de login -->
+      <!-- Contenedor del formulario de login (usa 3/5 del ancho en pantallas grandes) -->
       <div
-        class="w-full lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center"
+        class="w-full lg:w-3/5 p-8 md:p-12 lg:p-16 flex flex-col justify-center"
       >
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
           INICIAR SESIÓN
@@ -43,6 +43,9 @@
         >
           Credenciales inválidas. Por favor, inténtalo de nuevo.
         </div>
+        <div th:if="${param.registro}" class="p-3 mb-4 text-sm font-medium text-green-800 bg-green-100 rounded-lg shadow-md">
+          Registro exitoso. Ahora inicia sesión con tus credenciales.
+        </div>
         <div
           th:if="${param.logout}"
           class="p-3 mb-4 text-sm font-medium text-green-800 bg-green-100 rounded-lg shadow-md"
@@ -52,7 +55,7 @@
 
         <form
           id="loginForm"
-          th:action="@{/login_tecnicos}"
+          th:action="@{/tecnicos/login}"
           method="post"
           class="space-y-6"
         >
@@ -79,7 +82,7 @@
               type="text"
               name="username"
               id="username"
-              placeholder="Nombre de usuario"
+              placeholder="Correo electrónico"
               class="w-full py-3 pl-10 pr-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -132,7 +135,7 @@
         <div class="text-center mt-6 text-sm">
           <span class="text-gray-500">¿No tienes cuenta?</span>
           <a
-            th:href="@{/registro_tecnicos}"
+            th:href="@{/tecnicos/registro}"
             class="text-blue-600 font-semibold hover:underline"
             >Regístrate</a
           >
@@ -195,28 +198,18 @@
         </div>
       </div>
 
-      <!-- Contenedor de la imagen/caja de la derecha -->
+      <!-- Contenedor de la imagen/caja de la derecha (usa 2/5 del ancho en pantallas grandes) -->
       <div
-        class="hidden lg:flex w-1/2 relative bg-purple-600 bg-opacity-70 backdrop-blur-md items-center justify-center p-8 rounded-3xl"
-        style="
-          background-image: url('/images/login-background.svg');
-          background-size: cover;
-          background-position: center;
-        "
+        class="hidden lg:flex lg:w-2/5 relative bg-purple-600 bg-opacity-70 backdrop-blur-md items-center justify-center p-8 rounded-r-3xl"
+        style="background-image: url('/images/login-background.svg'); background-size: cover; background-position: center;"
       >
-        <div
-          class="relative z-10 text-white text-center p-8 rounded-3xl backdrop-blur-xl bg-white bg-opacity-10"
-        >
-          <h2 class="text-3xl font-bold mb-4">
-            ¡Inicia sesión y brinda soluciones a las amas de casa!
+        <div class="relative z-10 text-white text-center p-8 rounded-2xl bg-white bg-opacity-10">
+          <h2 class="text-2xl lg:text-3xl font-bold mb-4">
+            ¡Inicia sesión y brinda soluciones!
           </h2>
-          <div class="w-full relative">
-            <!-- Usando th:src para referenciar imágenes estáticas -->
-            <img
-              th:src="@{/images/logo.png}"
-              alt="Imagen de un técnico sonriendo"
-              class="w-full h-auto rounded-xl"
-            />
+          <p class="text-sm lg:text-base mb-4">Conéctate con clientes y gestiona tus servicios desde tu panel.</p>
+          <div class="w-48 mx-auto">
+            <img th:src="@{/images/logo.png}" alt="Logo" class="w-full h-auto rounded" />
           </div>
         </div>
       </div>

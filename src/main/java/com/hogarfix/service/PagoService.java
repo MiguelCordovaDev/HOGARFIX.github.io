@@ -19,4 +19,24 @@ public class PagoService {
     public List<Pago> listarPagos() {
         return pagoRepository.findAll();
     }
+
+    public List<Pago> listarPorCliente(com.hogarfix.model.Cliente cliente) {
+        return pagoRepository.findByCliente(cliente);
+    }
+
+    public java.util.Optional<Pago> marcarPagado(Long id) {
+        return pagoRepository.findById(id).map(p -> {
+            p.setEstado("PAGADO");
+            p.setFechaPago(java.time.LocalDateTime.now());
+            // opcional: actualizar servicio si hace falta
+            try {
+                if (p.getServicio() != null) {
+                    var s = p.getServicio();
+                    s.setMonto(p.getMonto()); // asegurar monto
+                    // no cambiar estado del servicio aquí
+                }
+            } catch (Exception ignored) {}
+            return pagoRepository.save(p);
+        });
+    }
 }

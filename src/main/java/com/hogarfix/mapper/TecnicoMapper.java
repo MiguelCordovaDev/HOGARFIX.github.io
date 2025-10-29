@@ -20,6 +20,8 @@ public class TecnicoMapper {
         dto.setApellidoMaterno(entity.getApellidoMaterno());
         dto.setDni(entity.getDni());
         dto.setCertificadoPdf(entity.getCertificadoPdf());
+    dto.setTelefono(entity.getTelefono());
+    dto.setFotoPerfil(entity.getFotoPerfil());
         dto.setIdUsuario(entity.getUsuario() != null ? entity.getUsuario().getIdUsuario() : null);
         dto.setIdDireccion(entity.getDireccion() != null ? entity.getDireccion().getIdDireccion() : null);
         dto.setPromedioCalificacion(entity.getPromedioCalificacion());
@@ -40,6 +42,8 @@ public class TecnicoMapper {
         entity.setApellidoMaterno(dto.getApellidoMaterno());
         entity.setDni(dto.getDni());
         entity.setCertificadoPdf(dto.getCertificadoPdf());
+    entity.setTelefono(dto.getTelefono());
+        entity.setFotoPerfil(dto.getFotoPerfil());
         entity.setUsuario(usuario);
         entity.setDireccion(direccion);
         entity.setPromedioCalificacion(dto.getPromedioCalificacion() != null ? dto.getPromedioCalificacion() : 0.0);

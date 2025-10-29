@@ -39,8 +39,8 @@ public class Servicio extends Auditable {
     @JoinColumn(name = "idCliente", nullable = false)
     private Cliente cliente;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idTecnico", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "idTecnico", nullable = true)
     private Tecnico tecnico;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -10,9 +10,11 @@ public class TecnicoDTO {
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String dni;
-    private String certificadoPdf; // Ruta del certificado
+    private String certificadoPdf; 
+    private String telefono;
+    private String fotoPerfil; 
     private Long idUsuario;
     private Long idDireccion;
     private Double promedioCalificacion;
-    private List<String> categorias; // Nombres de categorías del técnico
+    private List<String> categorias;
 }

@@ -23,8 +23,24 @@
             >Trabaja con nosotros</a
           >
         </li>
-        <li class="nav-item">
+        <!-- Si no hay usuario en sesión mostrar Iniciar sesión -->
+        <li class="nav-item" th:if="${session.usuarioActual == null}">
           <a class="nav-link" th:href="@{/auth/login}">Iniciar sesión</a>
+        </li>
+
+        <!-- Si hay usuario en sesión mostrar nombre y menú -->
+        <li class="nav-item dropdown" th:if="${session.usuarioActual != null}">
+          <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span th:text="${session.usuarioNombre != null} ? ${session.usuarioNombre} : ${session.usuarioActual.email}"></span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+            <li><a class="dropdown-item" th:href="@{/auth/redirect}">Perfil</a></li>
+            <li>
+              <form th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit" class="dropdown-item">Cerrar sesión</button>
+              </form>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>

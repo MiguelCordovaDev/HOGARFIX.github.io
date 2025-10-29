@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface PagoRepository extends JpaRepository<Pago, Long> {
     Optional<Pago> findByServicio(Servicio servicio);
+    java.util.List<Pago> findByCliente(com.hogarfix.model.Cliente cliente);
 }

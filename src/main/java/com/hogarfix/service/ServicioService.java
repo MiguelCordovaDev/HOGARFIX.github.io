@@ -22,8 +22,34 @@ public class ServicioService {
         return servicioRepository.findAll();
     }
 
+    public List<Servicio> listarPorCliente(com.hogarfix.model.Cliente cliente) {
+        return servicioRepository.findByCliente(cliente);
+    }
+
     public Optional<Servicio> buscarPorId(Long id) {
         return servicioRepository.findById(id);
+    }
+
+    public Optional<Servicio> marcarEnProgreso(Long id) {
+        return servicioRepository.findById(id).map(s -> {
+            s.setEstado("EN_PROCESO");
+            return servicioRepository.save(s);
+        });
+    }
+
+    public Optional<Servicio> marcarFinalizado(Long id) {
+        return servicioRepository.findById(id).map(s -> {
+            s.setEstado("FINALIZADO");
+            s.setFechaFinalizacion(java.time.LocalDateTime.now());
+            return servicioRepository.save(s);
+        });
+    }
+
+    public Optional<Servicio> marcarCancelado(Long id) {
+        return servicioRepository.findById(id).map(s -> {
+            s.setEstado("CANCELADO");
+            return servicioRepository.save(s);
+        });
     }
 
     public void eliminarServicio(Long id) {

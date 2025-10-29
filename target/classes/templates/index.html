@@ -158,7 +158,23 @@
         </nav>
 
         <div class="desktop-nav flex items-center space-x-4">
-          <a th:href="@{/login}" class="btn-primary">Iniciar Sesion</a>
+          <!-- Mostrar botón de iniciar sesión solo si no hay sesión activa -->
+          <div th:if="${session.usuarioActual == null}">
+            <a th:href="@{/auth/login}" class="btn-primary">Iniciar Sesión</a>
+          </div>
+          <!-- Si hay sesión, mostrar nombre y menú simple -->
+          <div th:if="${session.usuarioActual != null}" class="relative">
+            <div class="flex items-center gap-2">
+              <span class="font-medium" th:text="${session.usuarioNombre != null} ? ${session.usuarioNombre} : ${session.usuarioActual.email}"></span>
+              <div class="ml-2">
+                <a th:href="@{/auth/redirect}" class="text-sm text-muted-foreground hover:underline">Perfil</a>
+                &nbsp;|&nbsp;
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                  <button type="submit" class="text-sm text-muted-foreground hover:underline">Cerrar sesión</button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
 
         <button class="md:hidden p-2" onclick="toggleMobileMenu()">
@@ -226,7 +242,7 @@
                   <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
                 <a
-                  th:href="@{/tecnicos}"
+                  th:href="@{/buscartecnicos}"
                   class="btn-outline flex items-center gap-2 justify-center"
                 >
                   <i data-lucide="users" class="w-4 h-4"></i>
@@ -726,7 +742,7 @@
               </li>
               <li>
                 <a
-                  th:href="@{/registro_tecnicos}"
+                  th:href="@{/tecnicos/login}"
                   class="hover:text-primary transition-colors"
                   >Trabaja con nosotros</a
                 >
@@ -861,25 +877,22 @@
             </button>
           </div>
 
-          <form id="service-form" class="space-y-4">
+          <form id="service-form" th:action="@{/servicios/solicitar}" method="post" class="space-y-4">
+            <!-- CSRF token (will be ignored if CSRF is disabled) -->
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
             <div>
               <label class="block text-sm font-medium">Categoría:</label>
               <select
                 id="service-category"
+                name="idCategoria"
                 required
                 class="w-full p-2 border rounded"
               >
                 <option value="">Selecciona...</option>
-                <option value="plomeria">Plomería</option>
-                <option value="electricidad">Electricidad</option>
-                <option value="electrodomesticos">
-                  Reparación de Electrodomésticos
+                <option th:each="c : ${categorias}"
+                        th:value="${c.idCategoria}"
+                        th:text="${c.nombre}">
                 </option>
-                <option value="instalaciones">
-                  Instalaciones (A/C, Calentadores)
-                </option>
-                <option value="mantenimiento">Mantenimiento General</option>
-                <option value="emergencia">Emergencia 24/7</option>
               </select>
             </div>
 
@@ -889,6 +902,7 @@
               >
               <select
                 id="service-urgency"
+                name="urgency"
                 required
                 class="w-full p-2 border rounded"
               >
@@ -909,6 +923,7 @@
                 <label class="block text-sm font-medium">Nombre:</label>
                 <input
                   id="service-name"
+                  name="name"
                   type="text"
                   required
                   class="w-full p-2 border rounded"
@@ -919,6 +934,7 @@
                 <label class="block text-sm font-medium">Teléfono:</label>
                 <input
                   id="service-phone"
+                  name="phone"
                   type="tel"
                   required
                   class="w-full p-2 border rounded"
@@ -931,6 +947,7 @@
               <label class="block text-sm font-medium">Dirección:</label>
               <input
                 id="service-address"
+                name="address"
                 type="text"
                 required
                 class="w-full p-2 border rounded"
@@ -944,6 +961,7 @@
               >
               <input
                 id="service-date"
+                name="date"
                 type="date"
                 class="w-full p-2 border rounded"
               />
@@ -953,6 +971,7 @@
               <label class="block text-sm font-medium">Descripción:</label>
               <textarea
                 id="service-description"
+                name="description"
                 required
                 rows="4"
                 class="w-full p-2 border rounded"
@@ -1072,8 +1091,9 @@
         if (e.target === modal) closeServiceModal();
       });
 
-      // Envío del formulario
+      // Envío del formulario: validar mínimamente en cliente y luego enviar al servidor
       form.addEventListener("submit", (e) => {
+        // evitar el submit por defecto hasta validar
         e.preventDefault();
 
         const payload = {
@@ -1101,14 +1121,9 @@
           return;
         }
 
-        // Aquí envías payload al backend o lo procesas como necesites.
-        console.log("Solicitud enviada:", payload);
-
-        // feedback al usuario
-        alert(
-          "Solicitud enviada con éxito. Nos pondremos en contacto contigo pronto."
-        );
-        closeServiceModal();
+        // Enviar el formulario al servidor (POST a /servicios/solicitar)
+        // Al llamar submit(), el navegador enviará los campos con sus name attributes.
+        form.submit();
       });
     </script>
   </body>

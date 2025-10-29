@@ -15,5 +15,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     // Método para la autenticación simple
     Optional<Cliente> findByUsuario_Email(String email);
 
+    Optional<Cliente> findByUsuario_Username(String username);
+
     Optional<Cliente> findByUsuario_EmailAndUsuario_Password(String email, String password);
 }

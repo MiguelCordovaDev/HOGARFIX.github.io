@@ -45,8 +45,14 @@ public class Tecnico extends Auditable {
     @Column(nullable = false, length = 20)
     private String dni;
 
+    @Column(length = 20)
+    private String telefono;
+
     @Column(nullable = false, length = 255)
     private String certificadoPdf; // ruta o nombre del archivo del certificado
+    
+    @Column(length = 255)
+    private String fotoPerfil; // ruta relativa a uploads/tecnicos/...
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "idDireccion", nullable = false)

@@ -54,6 +54,14 @@ public class UsuarioService {
         return usuarioRepository.findById(id);
     }
 
+    public Optional<Usuario> buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
+    public Optional<Usuario> buscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username);
+    }
+
     public Usuario actualizarUsuario(Long id, Usuario usuarioActualizado) {
         return usuarioRepository.findById(id)
                 .map(u -> {

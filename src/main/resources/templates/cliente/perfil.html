@@ -1,28 +1,106 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="fragments/head :: head('Perfil Cliente')"></head>
-  <body>
-    <header th:replace="fragments/navbar :: navbar"></header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil | HogarFix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50">
 
-    <div class="container my-5">
-      <div class="card shadow-sm p-4">
-        <h3 class="text-primary mb-3">Mi Perfil</h3>
-
-        <p>
-          <strong>Nombre:</strong>
-          <span
-            th:text="${cliente.nombres} + ' ' + ${cliente.apellidos}"
-          ></span>
-        </p>
-        <p><strong>Email:</strong> <span th:text="${cliente.email}"></span></p>
-        <p>
-          <strong>Teléfono:</strong> <span th:text="${cliente.telefono}"></span>
-        </p>
-
-        <a th:href="@{/}" class="btn btn-secondary mt-3">Volver al inicio</a>
+  <!-- Simple header (brand + logout) -->
+  <header class="w-full bg-white border-b shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="text-2xl font-bold text-black">HogarFix</a>
+      <div class="flex items-center space-x-3">
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">Cerrar sesión</button>
+        </form>
       </div>
     </div>
+  </header>
 
-    <footer th:replace="fragments/footer :: footer"></footer>
+  <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <div class="flex flex-col items-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Cliente" class="w-24 h-24 rounded-full mb-3">
+        <h2 class="text-lg font-semibold" th:text="${cliente.nombres} + ' ' + ${cliente.apellidoPaterno}">Nombre Cliente</h2>
+        <p class="text-gray-500 text-sm" th:text="${cliente.dni}">DNI</p>
+      </div>
+
+      <div class="mt-4 text-gray-600 space-y-2 text-sm">
+        <p><i data-lucide="mail" class="inline w-4 h-4"></i> <span th:text="${cliente.usuario.email}">email@ejemplo.com</span></p>
+        <p><i data-lucide="phone" class="inline w-4 h-4"></i> <span th:text="${cliente.telefono}">+51 9xx xxx xxx</span></p>
+        <p><i data-lucide="map-pin" class="inline w-4 h-4"></i>
+          <span th:text="${cliente.direccion.calle} + ' ' + ${cliente.direccion.numero}">Calle y numero</span>,
+          <span th:text="${cliente.direccion.ciudad.nombre}">Ciudad</span>
+        </p>
+        <p th:if="${cliente.direccion.referencia != null}"><i data-lucide="map-pin" class="inline w-4 h-4"></i> <span th:text="${cliente.direccion.referencia}">Referencia</span></p>
+      </div>
+    </section>
+
+    <section class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-lg font-medium mb-4">Mis solicitudes</h3>
+      <p class="text-sm text-gray-500 mb-4">Tus solicitudes recientes aparecerán aquí.</p>
+
+      <h3 class="text-lg font-medium mb-4 mt-6">Pagos pendientes</h3>
+      <p class="text-sm text-gray-500 mb-4">Servicios finalizados que requieren pago.</p>
+
+      <div th:if="${pagosPendientes != null and !#lists.isEmpty(pagosPendientes)}">
+        <table class="w-full text-sm table-auto mb-4">
+          <thead>
+            <tr class="text-left">
+              <th class="px-2 py-1">Fecha</th>
+              <th class="px-2 py-1">Servicio / Categoría</th>
+              <th class="px-2 py-1">Monto</th>
+              <th class="px-2 py-1">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="p : ${pagosPendientes}" class="border-t">
+              <td class="px-2 py-2" th:text="${p.servicio != null and p.servicio.fechaFinalizacion != null} ? ${#temporals.format(p.servicio.fechaFinalizacion, 'dd/MM/yyyy')} : '-'">01/01/2025</td>
+              <td class="px-2 py-2" th:text="${p.servicio != null and p.servicio.descripcion != null} ? p.servicio.descripcion : (p.servicio != null and p.servicio.categoria != null ? p.servicio.categoria.nombre : 'Servicio')">Reparación de lavadora</td>
+              <td class="px-2 py-2" th:text="${'S/ ' + p.monto}">S/ 120.00</td>
+              <td class="px-2 py-2">
+                <a th:href="@{/pagos(pagoId=${p.idPago})}" class="px-3 py-1 bg-cyan-500 text-white rounded">Pagar</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div th:if="${pagosPendientes == null or #lists.isEmpty(pagosPendientes)}">
+        <p class="text-gray-400 mb-4">No hay pagos pendientes.</p>
+      </div>
+
+      <div th:if="${serviciosPendientes != null and !#lists.isEmpty(serviciosPendientes)}">
+        <table class="w-full text-sm table-auto">
+          <thead>
+            <tr class="text-left">
+              <th class="px-2 py-1">Fecha</th>
+              <th class="px-2 py-1">Categoría</th>
+              <th class="px-2 py-1">Descripción</th>
+              <th class="px-2 py-1">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="s : ${serviciosPendientes}" class="border-t">
+              <td class="px-2 py-2" th:text="${#temporals.format(s.fechaSolicitud, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+              <td class="px-2 py-2" th:text="${s.categoria != null ? s.categoria.nombre : 'Sin categoría'}">Plomería</td>
+              <td class="px-2 py-2" th:text="${s.descripcion}">Descripción del servicio</td>
+              <td class="px-2 py-2" th:text="${s.estado}">PENDIENTE</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div th:if="${serviciosPendientes == null or #lists.isEmpty(serviciosPendientes)}">
+        <p class="text-gray-400">No tienes solicitudes registradas aún.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+  </script>
   </body>
 </html>

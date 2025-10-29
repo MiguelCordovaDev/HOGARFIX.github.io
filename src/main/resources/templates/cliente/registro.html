@@ -13,57 +13,79 @@
         method="post"
         class="card shadow p-4"
       >
-        <div
-          th:if="${error}"
-          class="alert alert-danger"
-          th:text="${error}"
-        ></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Nombres</label>
-            <input
-              type="text"
-              th:field="*{nombres}"
-              class="form-control"
-              required
-            />
+            <input type="text" th:field="*{nombres}" class="form-control" required />
           </div>
           <div class="col-md-6">
-            <label class="form-label">Apellidos</label>
-            <input
-              type="text"
-              th:field="*{apellidos}"
-              class="form-control"
-              required
-            />
+            <label class="form-label">Apellido paterno</label>
+            <input type="text" th:field="*{apellidoPaterno}" class="form-control" required />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Apellido materno</label>
+            <input type="text" th:field="*{apellidoMaterno}" class="form-control" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">DNI</label>
+            <input type="text" th:field="*{dni}" class="form-control" required />
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Correo electrónico</label>
-            <input
-              type="email"
-              th:field="*{email}"
-              class="form-control"
-              required
-            />
+            <input type="email" th:field="*{usuario.email}" class="form-control" required />
           </div>
           <div class="col-md-6">
-            <label class="form-label">Teléfono</label>
-            <input
-              type="tel"
-              th:field="*{telefono}"
-              class="form-control"
-              required
-            />
+            <label class="form-label">Contraseña</label>
+            <input type="password" th:field="*{usuario.password}" class="form-control" required />
           </div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100">
-          Registrar Cliente
-        </button>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" th:field="*{telefono}" class="form-control" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de nacimiento</label>
+            <input type="date" th:field="*{fechaNacimiento}" class="form-control" />
+          </div>
+        </div>
+
+        <h5 class="mt-3">Dirección</h5>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Calle</label>
+            <input type="text" th:field="*{direccion.calle}" class="form-control" required />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Número</label>
+            <input type="text" th:field="*{direccion.numero}" class="form-control" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Referencia</label>
+            <input type="text" th:field="*{direccion.referencia}" class="form-control" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Ciudad</label>
+            <select th:field="*{direccion.ciudad.idCiudad}" class="form-control" required>
+              <option value="" disabled th:if="${#lists.isEmpty(ciudades)}">No hay ciudades</option>
+              <option th:each="c : ${ciudades}" th:value="${c.idCiudad}" th:text="${c.nombre}"></option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Registrar Cliente</button>
       </form>
     </div>
 

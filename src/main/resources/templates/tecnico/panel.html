@@ -1,56 +1,124 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="fragments/head :: head('Panel Técnico')"></head>
-  <body>
-    <header th:replace="fragments/navbar :: navbar"></header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Técnico | HogarFix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50">
 
-    <div class="container my-5">
-      <h2 class="text-center mb-4">Panel del Técnico</h2>
+  <!-- Simple header (brand + logout) -->
+  <header class="w-full bg-white border-b shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="text-2xl font-bold text-black">HogarFix</a>
+      <div class="flex items-center space-x-3">
+        <form th:action="@{/logout}" method="post">
+          <button type="submit" class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">Cerrar sesión</button>
+        </form>
+      </div>
+    </div>
+  </header>
 
-      <div class="card shadow-sm p-4 mb-4">
-        <h4>
-          Bienvenido,
-          <span
-            th:text="${tecnico.nombres} + ' ' + ${tecnico.apellidoPaterno}"
-          ></span>
-        </h4>
-        <p><strong>DNI:</strong> <span th:text="${tecnico.dni}"></span></p>
-        <p>
-          <strong>Certificado:</strong>
-          <a
-            th:href="@{/tecnicos/certificados/{file}(file=${tecnico.certificadoPdf})}"
-            target="_blank"
-          >
-            Ver PDF
-          </a>
+  <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <div class="flex flex-col items-center">
+  <img th:src="${tecnicoFotoNombre != null} ? @{/tecnicos/fotos/{name}(name=${tecnicoFotoNombre})} : 'https://cdn-icons-png.flaticon.com/512/2922/2922510.png'"
+             alt="Foto Técnico"
+             class="w-24 h-24 rounded-full mb-3 object-cover" />
+  <h2 class="text-lg font-semibold" th:text="${tecnico.nombres + ' ' + tecnico.apellidoPaterno}">Nombre Técnico</h2>
+        <p class="text-gray-500 text-sm" th:text="${tecnico.dni}"><strong>Dni:</strong>DNI</p>
+        <!-- Especialidad / Categoría seleccionada -->
+        <p class="text-gray-700 text-sm mt-2">
+          <strong>Especialidad:</strong>
+          <span th:if="${categoria != null}" th:text="${categoria.nombre}">Sin especificar</span>
+          <span th:unless="${categoria != null}">Sin especificar</span>
         </p>
       </div>
 
-      <h5 class="mt-4">Servicios asignados</h5>
-      <table class="table table-striped mt-3">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Servicio</th>
-            <th>Cliente</th>
-            <th>Estado</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="servicio, iter : ${servicios}">
-            <td th:text="${iter.index + 1}"></td>
-            <td th:text="${servicio.nombre}"></td>
-            <td th:text="${servicio.cliente.nombres}"></td>
-            <td th:text="${servicio.estado}"></td>
-            <td
-              th:text="${#temporals.format(servicio.fechaRegistro, 'dd/MM/yyyy')}"
-            ></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="mt-4 text-gray-600 space-y-2 text-sm">
+        <p><i data-lucide="mail" class="inline w-4 h-4"></i> <span th:text="${tecnico.usuario.email}">email@ejemplo.com</span></p>
+  <p><i data-lucide="phone" class="inline w-4 h-4"></i> <span th:text="${tecnico.telefono}">+51 9xx xxx xxx</span></p>
+        <p><i data-lucide="map-pin" class="inline w-4 h-4"></i>
+          <span th:text="${tecnico.direccion.calle} + ' ' + ${tecnico.direccion.numero}">Calle y numero</span>,
+          <span th:text="${tecnico.direccion.ciudad.nombre}">Ciudad</span>
+        </p>
+        <p th:if="${tecnico.direccion.referencia != null}"><i data-lucide="map-pin" class="inline w-4 h-4"></i> <span th:text="${tecnico.direccion.referencia}">Referencia</span></p>
 
-    <footer th:replace="fragments/footer :: footer"></footer>
+        <p th:if="${tecnico.certificadoPdf != null}">
+          <i data-lucide="file-text" class="inline w-4 h-4"></i>
+          <a th:href="@{/tecnicos/certificados/{nombre}(nombre=${#strings.substringAfter(tecnico.certificadoPdf, '/uploads/certificados/')})}" target="_blank" class="text-blue-600 hover:underline">Ver certificado PDF</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+      <h3 class="text-lg font-medium mb-4">Información profesional</h3>
+      <p class="text-sm text-gray-500 mb-4">Detalles y registros relacionados con tu cuenta técnica.</p>
+
+      <!-- Placeholder: detalles adicionales del técnico (aún no definidos en la entidad) -->
+      <div class="space-y-3 text-sm text-gray-700">
+        <p class="text-gray-500">No hay detalles profesionales adicionales definidos aún.</p>
+      </div>
+
+      <div class="mt-6">
+        <h4 class="text-lg font-medium mb-3">Mis solicitudes</h4>
+        <div th:if="${#lists.isEmpty(servicios)}" class="text-sm text-gray-500">No tienes solicitudes asignadas todavía.</div>
+        <table th:if="${!#lists.isEmpty(servicios)}" class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="text-left text-gray-600 border-b">
+              <th class="py-2">Fecha</th>
+              <th class="py-2">Cliente / Contacto</th>
+              <th class="py-2">Descripción</th>
+              <th class="py-2">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="s : ${servicios}" class="border-b">
+              <td class="py-2" th:text="${#temporals.format(s.fechaSolicitud, 'dd/MM/yyyy HH:mm')}">01/01/2024</td>
+              <td class="py-2">
+                <div th:text="${s.cliente != null ? s.cliente.nombres + ' ' + s.cliente.apellidoPaterno : 'Cliente'}">Cliente</div>
+                <div class="text-gray-500" th:text="${#strings.substringBefore(s.descripcion, '\\n')}">Contacto info</div>
+              </td>
+              <td class="py-2" th:text="${s.descripcion}">Descripción</td>
+              <td class="py-2">
+                <div class="mb-2">
+                  <span th:text="${s.estado}">PENDIENTE</span>
+                </div>
+
+                <!-- Acciones según estado -->
+                <div th:switch="${s.estado}">
+                  <div th:case="'PENDIENTE'">
+                    <form th:action="@{/servicios/{id}/aceptar(id=${s.idServicio})}" method="post" style="display:inline">
+                      <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                      <button type="submit" class="px-2 py-1 bg-green-600 text-white rounded">Aceptar</button>
+                    </form>
+                    <form th:action="@{/servicios/{id}/cancelar(id=${s.idServicio})}" method="post" style="display:inline; margin-left:6px">
+                      <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                      <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded">Cancelar</button>
+                    </form>
+                  </div>
+                  <div th:case="'EN_PROCESO'">
+                    <form th:action="@{/servicios/{id}/finalizar(id=${s.idServicio})}" method="post" style="display:inline">
+                      <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                      <button type="submit" class="px-2 py-1 bg-blue-600 text-white rounded">Terminar</button>
+                    </form>
+                  </div>
+                  <div th:case="*">
+                    <!-- otros estados: solo mostrar etiqueta -->
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+  </script>
   </body>
 </html>

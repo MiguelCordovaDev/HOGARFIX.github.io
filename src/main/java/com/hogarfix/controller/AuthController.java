@@ -5,10 +5,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.ui.Model;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import jakarta.servlet.http.HttpSession;
 import com.hogarfix.model.Usuario;
 import com.hogarfix.service.UsuarioService;
+import com.hogarfix.repository.ClienteRepository;
+import com.hogarfix.repository.TecnicoRepository;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -17,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final UsuarioService usuarioService;
+    private final AuthenticationManager authenticationManager;
+    private final ClienteRepository clienteRepository;
+    private final TecnicoRepository tecnicoRepository;
 
     @GetMapping("/login")
     public String mostrarLogin() {
@@ -40,12 +50,108 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/login")
+    public String procesarLogin(@org.springframework.web.bind.annotation.RequestParam("username") String username,
+        @org.springframework.web.bind.annotation.RequestParam("password") String password,
+        HttpSession session) {
+        try {
+            UsernamePasswordAuthenticationToken token =
+                    new UsernamePasswordAuthenticationToken(username, password);
+            Authentication auth = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // Persist SecurityContext in HTTP session so Spring Security recognizes the login across requests
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+            // Intentar resolver el usuario por el nombre del principal (puede ser email o username)
+            String principalName = auth.getName();
+            var usuarioOpt = usuarioService.buscarPorEmail(principalName);
+            if (usuarioOpt.isEmpty()) usuarioOpt = usuarioService.buscarPorUsername(principalName);
+
+            if (usuarioOpt.isPresent()) {
+                Usuario u = usuarioOpt.get();
+                session.setAttribute("usuarioActual", u);
+                // establecer un nombre legible según rol
+                if (u.getRol() != null && u.getRol().getTipoRol() != null) {
+                    switch (u.getRol().getTipoRol()) {
+                        case ADMIN:
+                            session.setAttribute("usuarioNombre", u.getEmail());
+                            return "redirect:/admin/dashboard";
+                        case TECNICO:
+                            tecnicoRepository.findByUsuario_Email(u.getEmail()).ifPresent(t ->
+                                session.setAttribute("usuarioNombre", t.getNombres() + " " + t.getApellidoPaterno())
+                            );
+                            return "redirect:/tecnicos/panel";
+                        case CLIENTE:
+                            clienteRepository.findByUsuario_Email(u.getEmail()).ifPresent(c ->
+                                session.setAttribute("usuarioNombre", c.getNombres() + " " + c.getApellidoPaterno())
+                            );
+                            return "redirect:/"; // home for clients
+                        default:
+                            session.setAttribute("usuarioNombre", u.getEmail());
+                            return "redirect:/";
+                    }
+                }
+            }
+            return "redirect:/"; // fallback
+        } catch (AuthenticationException ex) {
+            return "redirect:/auth/login?error";
+        }
+    }
+
     /**
      * Este método puede usarse después del login para redirigir al dashboard
      * correcto.
      */
     @GetMapping("/redirect")
-    public String redirigirSegunRol(@SessionAttribute("usuarioActual") Usuario usuario) {
+    public String redirigirSegunRol(jakarta.servlet.http.HttpSession session, java.security.Principal principal) {
+        // Intentamos obtener usuario desde la sesión
+        Usuario usuario = (Usuario) session.getAttribute("usuarioActual");
+
+        // Si no está en sesión, intentar cargarlo desde el principal (nombre = email)
+        if (usuario == null) {
+            // 1) usar el Principal si está disponible
+            if (principal != null) {
+                var usuarioOpt = usuarioService.buscarPorEmail(principal.getName());
+                if (usuarioOpt.isEmpty()) {
+                    usuarioOpt = usuarioService.buscarPorUsername(principal.getName());
+                }
+                if (usuarioOpt.isPresent()) {
+                    usuario = usuarioOpt.get();
+                }
+            }
+
+            // 2) si aún no está, intentar obtener del SecurityContext (por remember-me u otros proveedores)
+            if (usuario == null) {
+                var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+                    Object p = auth.getPrincipal();
+                    if (p instanceof Usuario) {
+                        usuario = (Usuario) p;
+                    } else if (p instanceof org.springframework.security.core.userdetails.UserDetails) {
+                        String name = ((org.springframework.security.core.userdetails.UserDetails) p).getUsername();
+                        var usuarioOpt2 = usuarioService.buscarPorEmail(name);
+                        if (usuarioOpt2.isEmpty()) usuarioOpt2 = usuarioService.buscarPorUsername(name);
+                        if (usuarioOpt2.isPresent()) usuario = usuarioOpt2.get();
+                    }
+                }
+            }
+
+            // si lo encontramos, guardarlo en sesión y preparar usuarioNombre
+            if (usuario != null) {
+                session.setAttribute("usuarioActual", usuario);
+                clienteRepository.findByUsuario_Email(usuario.getEmail()).ifPresent(c ->
+                        session.setAttribute("usuarioNombre", c.getNombres() + " " + c.getApellidoPaterno())
+                );
+                tecnicoRepository.findByUsuario_Email(usuario.getEmail()).ifPresent(t ->
+                        session.setAttribute("usuarioNombre", t.getNombres() + " " + t.getApellidoPaterno())
+                );
+            }
+        }
+
+        if (usuario == null) {
+            // no autenticado o no encontramos usuario -> forzar login
+            return "redirect:/auth/login";
+        }
 
         if (usuario.getRol() == null || usuario.getRol().getTipoRol() == null) {
             return "redirect:/auth/login?error=rol_invalido";
@@ -57,7 +163,7 @@ public class AuthController {
             case TECNICO:
                 return "redirect:/tecnicos/panel";
             case CLIENTE:
-                return "redirect:/clientes/inicio";
+                return "redirect:/clientes/perfil";
             default:
                 return "redirect:/auth/login?error=sin_rol";
         }
