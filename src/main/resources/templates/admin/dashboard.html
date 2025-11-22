@@ -1,13 +1,23 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="fragments/head :: head('Dashboard Admin')"></head>
+  <head th:replace="~{fragments/head :: head('Dashboard Admin')}"></head>
   <body>
-    <header th:replace="fragments/navbar :: navbar"></header>
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
 
-    <div class="container my-5">
+    <style>
+      /* Layout específico para páginas admin: footer abajo */
+      .admin-page { display: flex; flex-direction: column; min-height: 100vh; }
+      .admin-content { flex: 1 0 auto; }
+      footer[th\:fragment] { margin-top: 0 !important; }
+    </style>
+
+    <div class="admin-page">
+      <main class="admin-content">
+        <div class="container my-5">
       <h2 class="text-center mb-4">Panel de Administración</h2>
 
-      <div class="row text-center">
+      <!-- Estadísticas Principales -->
+      <div class="row text-center mb-5">
         <div class="col-md-4 mb-4">
           <div class="card shadow-sm border-0">
             <div class="card-body">
@@ -39,10 +49,10 @@
         <div class="col-md-4 mb-4">
           <div class="card shadow-sm border-0">
             <div class="card-body">
-              <h5>Servicios Activos</h5>
+              <h5>Total Pagos</h5>
               <p
                 class="display-6 fw-bold text-warning"
-                th:text="${serviciosCount}"
+                th:text="${totalPagos}"
               >
                 0
               </p>
@@ -50,8 +60,37 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <footer th:replace="fragments/footer :: footer"></footer>
+      <!-- Accesos rápidos a listados (solo lectura) -->
+      <div class="row mb-5">
+        <div class="col-md-6 mb-3">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Clientes</h5>
+              <p class="card-text">Ver el listado completo de clientes registrados en la base de datos (solo lectura).</p>
+              <div class="mt-auto"><a th:href="@{/admin/clientes}" class="btn btn-primary">Ver clientes</a></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">Técnicos</h5>
+              <p class="card-text">Ver el listado completo de técnicos registrados en la base de datos (solo lectura).</p>
+              <div class="mt-auto"><a th:href="@{/admin/tecnicos}" class="btn btn-success">Ver técnicos</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <div class="text-center mb-5">
+        <a href="/logout" class="btn btn-outline-danger">Cerrar Sesión</a>
+      </div>
+      </div>
+    </main>
+    <footer th:replace="~{fragments/footer :: footer}" class="mt-auto"></footer>
+  </div>
   </body>
 </html>

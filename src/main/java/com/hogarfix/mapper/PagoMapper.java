@@ -21,8 +21,6 @@ public class PagoMapper {
                 .fechaPago(pago.getFechaPago())
                 .estado(pago.getEstado())
                 .createdAt(pago.getCreatedAt())
-                .updatedAt(pago.getUpdatedAt())
-                .deletedAt(pago.getDeletedAt())
                 .build();
     }
 
@@ -51,8 +49,7 @@ public class PagoMapper {
         pago.setFechaPago(dto.getFechaPago());
         pago.setEstado(dto.getEstado());
         pago.setCreatedAt(dto.getCreatedAt());
-        pago.setUpdatedAt(dto.getUpdatedAt());
-        pago.setDeletedAt(dto.getDeletedAt());
+
 
         return pago;
     }

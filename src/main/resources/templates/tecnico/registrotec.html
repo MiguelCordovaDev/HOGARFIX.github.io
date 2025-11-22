@@ -21,23 +21,28 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Nombres</label>
-          <input type="text" th:field="*{nombres}" class="w-full px-3 py-2 border rounded" required />
+          <input type="text" th:field="*{nombres}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="w-full px-3 py-2 border rounded" required />
+          <small class="text-gray-500">Solo letras, mínimo 2 caracteres</small>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Apellido Paterno</label>
-          <input type="text" th:field="*{apellidoPaterno}" class="w-full px-3 py-2 border rounded" required />
+          <input type="text" th:field="*{apellidoPaterno}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="w-full px-3 py-2 border rounded" required />
+          <small class="text-gray-500">Solo letras, mínimo 2 caracteres</small>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Apellido Materno</label>
-          <input type="text" th:field="*{apellidoMaterno}" class="w-full px-3 py-2 border rounded" />
+          <input type="text" th:field="*{apellidoMaterno}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="w-full px-3 py-2 border rounded" />
+          <small class="text-gray-500">Solo letras (opcional)</small>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">DNI</label>
-          <input type="text" th:field="*{dni}" class="w-full px-3 py-2 border rounded" required />
+          <input type="text" th:field="*{dni}" pattern="\d{8}" inputmode="numeric" minlength="8" maxlength="8" class="w-full px-3 py-2 border rounded" required />
+          <small class="text-gray-500">Exactamente 8 dígitos</small>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-          <input type="tel" th:field="*{telefono}" class="w-full px-3 py-2 border rounded" />
+          <input type="tel" th:field="*{telefono}" pattern="\d{9}" inputmode="numeric" minlength="9" maxlength="9" class="w-full px-3 py-2 border rounded" />
+          <small class="text-gray-500">Exactamente 9 dígitos</small>
         </div>
       </div>
 
@@ -45,11 +50,13 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-          <input type="email" th:field="*{usuario.email}" class="w-full px-3 py-2 border rounded" required />
+          <input type="email" th:field="*{usuario.email}" minlength="5" maxlength="100" class="w-full px-3 py-2 border rounded" required />
+          <small class="text-gray-500">Email válido requerido</small>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-          <input type="password" th:field="*{usuario.password}" class="w-full px-3 py-2 border rounded" required />
+          <input type="password" th:field="*{usuario.password}" minlength="6" maxlength="100" class="w-full px-3 py-2 border rounded" required />
+          <small class="text-gray-500">Mínimo 6 caracteres</small>
         </div>
       </div>
 

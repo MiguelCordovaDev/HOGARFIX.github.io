@@ -21,6 +21,8 @@ public class SecurityConfig {
                         // permitir las rutas de registro (GET y POST explícitamente)
                         .requestMatchers(HttpMethod.GET, "/clientes/registro", "/tecnicos/registro").permitAll()
                         .requestMatchers(HttpMethod.POST, "/clientes/registro", "/tecnicos/registro").permitAll()
+                        // proteger rutas admin solo para usuarios con rol ADMIN
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         // el resto de endpoints requieren autenticación
                         .anyRequest().authenticated())
                 .formLogin(form -> form

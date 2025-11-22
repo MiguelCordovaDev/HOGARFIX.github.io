@@ -39,9 +39,6 @@ public class UsuarioService {
     public void eliminarUsuario(Long id, Integer usuarioModificacion) {
         usuarioRepository.findById(id).ifPresent(usuario -> {
             usuario.setIsActivo(false);
-            usuario.setDeletedAt(LocalDateTime.now());
-            usuario.setUsuarioModificacion(usuarioModificacion);
-            usuario.setUpdatedAt(LocalDateTime.now());
             usuarioRepository.save(usuario);
         });
     }
@@ -67,8 +64,6 @@ public class UsuarioService {
                 .map(u -> {
                     u.setUsername(usuarioActualizado.getUsername());
                     u.setEmail(usuarioActualizado.getEmail());
-                    u.setUsuarioModificacion(usuarioActualizado.getUsuarioModificacion());
-                    u.setDeletedAt(LocalDateTime.now());
                     return usuarioRepository.save(u);
                 })
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

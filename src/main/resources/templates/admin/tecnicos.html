@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Técnicos registrados')}"></head>
+<body>
+  <header th:replace="~{fragments/navbar :: navbar}"></header>
+
+  <style>
+    .admin-page { display: flex; flex-direction: column; min-height: 100vh; }
+    .admin-content { flex: 1 0 auto; }
+    footer[th\:fragment] { margin-top: 0 !important; }
+  </style>
+
+  <div class="admin-page">
+    <main class="admin-content">
+      <div class="container my-5">
+        <h2 class="mb-4">Listado de técnicos (solo lectura)</h2>
+
+    <div th:if="${not #lists.isEmpty(tecnicos)}">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre completo</th>
+              <th>Especialidad</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>DNI</th>
+              <th>Ciudad</th>
+              <th>Calificación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="tecnico : ${tecnicos}">
+              <td th:text="${tecnico.idTecnico}">-</td>
+              <td>
+                <span th:text="${tecnico.nombres ?: 'N/A'}"></span>
+                <span th:if="${tecnico.apellidoPaterno}" th:text="' ' + ${tecnico.apellidoPaterno}"></span>
+                <span th:if="${tecnico.apellidoMaterno}" th:text="' ' + ${tecnico.apellidoMaterno}"></span>
+              </td>
+              <td>
+                <span th:if="${tecnico.categorias != null and tecnico.categorias.size() > 0}" th:text="${tecnico.categorias[0].categoria?.nombre ?: 'N/A'}">N/A</span>
+                <span th:if="${tecnico.categorias == null or tecnico.categorias.size() == 0}">N/A</span>
+              </td>
+              <td th:text="${tecnico.usuario?.email ?: 'N/A'}">-</td>
+              <td th:text="${tecnico.telefono ?: 'N/A'}">-</td>
+              <td th:text="${tecnico.dni ?: 'N/A'}">-</td>
+              <td th:text="${tecnico.direccion?.ciudad?.nombre ?: 'N/A'}">-</td>
+              <td th:text="${#numbers.formatDecimal(tecnico.promedioCalificacion, 1, 2)}">0.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div th:if="${#lists.isEmpty(tecnicos)}" class="alert alert-info">No hay técnicos registrados.</div>
+
+    <a th:href="@{/admin/dashboard}" class="btn btn-secondary mt-3">Volver</a>
+      </div>
+    </main>
+    <footer th:replace="~{fragments/footer :: footer}" class="mt-auto"></footer>
+  </div>
+</body>
+</html>

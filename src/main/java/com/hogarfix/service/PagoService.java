@@ -4,6 +4,7 @@ import com.hogarfix.model.Pago;
 import com.hogarfix.repository.PagoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -20,8 +21,31 @@ public class PagoService {
         return pagoRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Pago> listarPorCliente(com.hogarfix.model.Cliente cliente) {
-        return pagoRepository.findByCliente(cliente);
+        List<Pago> pagos = pagoRepository.findByCliente(cliente);
+        // Inicializar todas las relaciones lazy dentro de la transacción
+        for (Pago p : pagos) {
+            if (p.getServicio() != null) {
+                // Tocar los campos lazy de Servicio para inicializarlos
+                p.getServicio().getIdServicio();
+                p.getServicio().getDescripcion();
+                p.getServicio().getMonto();
+                
+                // Inicializar Tecnico si existe
+                if (p.getServicio().getTecnico() != null) {
+                    p.getServicio().getTecnico().getNombres();
+                    p.getServicio().getTecnico().getApellidoPaterno();
+                    p.getServicio().getTecnico().getApellidoMaterno();
+                }
+                
+                // Inicializar Categoria si existe
+                if (p.getServicio().getCategoria() != null) {
+                    p.getServicio().getCategoria().getNombre();
+                }
+            }
+        }
+        return pagos;
     }
 
     public java.util.Optional<Pago> marcarPagado(Long id) {

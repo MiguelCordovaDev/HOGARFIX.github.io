@@ -14,22 +14,23 @@
     </button>
     <div id="navbarNav" class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
-        <li class="nav-item">
+        <!-- Mostrar enlaces públicos sólo si no es ADMIN -->
+        <li class="nav-item" th:if="${session.usuarioActual == null or session.usuarioActual?.rol?.nombre != 'ADMIN'}">
+          <a class="nav-link" th:href="@{/}">Inicio</a>
+        </li>
+        <li class="nav-item" th:if="${session.usuarioActual == null or session.usuarioActual?.rol?.nombre != 'ADMIN'}">
           <a class="nav-link" th:href="@{/clientes/registro}">Regístrate</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/tecnicos/registro}"
-            >Trabaja con nosotros</a
-          >
+        <li class="nav-item" th:if="${session.usuarioActual == null or session.usuarioActual?.rol?.nombre != 'ADMIN'}">
+          <a class="nav-link" th:href="@{/tecnicos/registro}">Trabaja con nosotros</a>
         </li>
         <!-- Si no hay usuario en sesión mostrar Iniciar sesión -->
         <li class="nav-item" th:if="${session.usuarioActual == null}">
           <a class="nav-link" th:href="@{/auth/login}">Iniciar sesión</a>
         </li>
 
-        <!-- Si hay usuario en sesión mostrar nombre y menú -->
-        <li class="nav-item dropdown" th:if="${session.usuarioActual != null}">
+        <!-- Si hay usuario en sesión mostrar nombre y menú (ocultar dropdown para ADMIN) -->
+        <li class="nav-item dropdown" th:if="${session.usuarioActual != null and session.usuarioActual?.rol?.nombre != 'ADMIN'}">
           <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span th:text="${session.usuarioNombre != null} ? ${session.usuarioNombre} : ${session.usuarioActual.email}"></span>
           </a>
@@ -41,6 +42,13 @@
               </form>
             </li>
           </ul>
+        </li>
+
+        <!-- Si el usuario es ADMIN mostrar sólo cierre de sesión (sin mostrar email) -->
+        <li class="nav-item" th:if="${session.usuarioActual != null and session.usuarioActual?.rol?.nombre == 'ADMIN'}">
+          <form th:action="@{/logout}" method="post" style="display:inline">
+            <button type="submit" class="nav-link btn btn-link text-decoration-none" style="color: rgba(255,255,255,0.9);">Cerrar sesión</button>
+          </form>
         </li>
       </ul>
     </div>

@@ -19,12 +19,9 @@ public class UsuarioMapper {
                 .idRol(usuario.getRol() != null ? usuario.getRol().getIdRol() : null)
                 .nombreRol(usuario.getRol() != null ? usuario.getRol().getNombre() : null)
                 // auditoría
-                .isActivo(usuario.getIsActivo())
-                .usuarioCreacion(usuario.getUsuarioCreacion())
-                .usuarioModificacion(usuario.getUsuarioModificacion())
+                .isActivo(usuario.getIsActivo())               
                 .createdAt(usuario.getCreatedAt())
-                .updatedAt(usuario.getUpdatedAt())
-                .deletedAt(usuario.getDeletedAt())
+          
                 .build();
     }
 
@@ -48,11 +45,7 @@ public class UsuarioMapper {
 
         // auditoría
         usuario.setIsActivo(dto.getIsActivo());
-        usuario.setUsuarioCreacion(dto.getUsuarioCreacion());
-        usuario.setUsuarioModificacion(dto.getUsuarioModificacion());
         usuario.setCreatedAt(dto.getCreatedAt());
-        usuario.setUpdatedAt(dto.getUpdatedAt());
-        usuario.setDeletedAt(dto.getDeletedAt());
 
         return usuario;
     }

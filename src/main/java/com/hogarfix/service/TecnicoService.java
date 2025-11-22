@@ -2,6 +2,7 @@ package com.hogarfix.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.hogarfix.model.Tecnico;
@@ -55,8 +56,22 @@ public class TecnicoService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<Tecnico> listarTecnicos() {
-        return tecnicoRepository.findAll();
+        var tecnicos = tecnicoRepository.findAll();
+        // Inicializar asociaciones perezosas (usuario, categorias, direccion)
+        for (Tecnico t : tecnicos) {
+            if (t.getUsuario() != null) {
+                t.getUsuario().getEmail();
+            }
+            if (t.getCategorias() != null) {
+                t.getCategorias().size();
+            }
+            if (t.getDireccion() != null) {
+                t.getDireccion().getCiudad();
+            }
+        }
+        return tecnicos;
     }
 
     public Optional<Tecnico> buscarPorId(Long id) {

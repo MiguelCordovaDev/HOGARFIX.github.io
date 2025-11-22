@@ -2,6 +2,7 @@ package com.hogarfix.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.hogarfix.model.Cliente;
@@ -48,8 +49,20 @@ public class ClienteService {
                 .filter(c -> passwordEncoder.matches(password, c.getUsuario().getPassword()));
     }
 
+    @Transactional(readOnly = true)
     public List<Cliente> listarClientes() {
-        return clienteRepository.findAll();
+        var clientes = clienteRepository.findAll();
+        // Inicializar asociaciones perezosas dentro de la transacción del servicio
+        for (Cliente c : clientes) {
+            if (c.getUsuario() != null) {
+                // tocar una propiedad para forzar carga
+                c.getUsuario().getEmail();
+            }
+            if (c.getDireccion() != null) {
+                c.getDireccion().getCiudad();
+            }
+        }
+        return clientes;
     }
 
     public Optional<Cliente> buscarPorId(Long id) {

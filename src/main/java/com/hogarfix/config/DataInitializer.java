@@ -1,5 +1,6 @@
 package com.hogarfix.config;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,11 +26,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Crear país Perú si no existe
-        Pais paisPeru = paisRepository.findAll().stream()
-                .filter(p -> "peru".equalsIgnoreCase(p.getNombre()))
-                .findFirst()
-                .orElseGet(() -> paisRepository.save(Pais.builder().nombre("Perú").build()));
+        // Crear país Perú si no existe (normalizamos para evitar problemas con acentos)
+        var paisOpt = paisRepository.findAll().stream()
+                .filter(p -> normalize(p.getNombre()).equals("peru"))
+                .findFirst();
+
+        Pais paisPeru = paisOpt.orElseGet(() -> paisRepository.save(Pais.builder().nombre("Perú").build()));
 
         // Lista de distritos de Lima (al menos 15)
         List<String> limaDistritos = List.of(
@@ -66,4 +68,11 @@ public class DataInitializer implements CommandLineRunner {
             ciudadRepository.saveAll(faltantes);
         }
     }
+
+        private String normalize(String input) {
+                if (input == null) return "";
+                String n = Normalizer.normalize(input, Normalizer.Form.NFD);
+                // remove diacritical marks
+                return n.replaceAll("\\p{M}", "").toLowerCase();
+        }
 }
