@@ -17,11 +17,15 @@ import com.hogarfix.service.UsuarioService;
 import com.hogarfix.repository.ClienteRepository;
 import com.hogarfix.repository.TecnicoRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final UsuarioService usuarioService;
     private final AuthenticationManager authenticationManager;
@@ -54,11 +58,15 @@ public class AuthController {
     public String procesarLogin(@org.springframework.web.bind.annotation.RequestParam("username") String username,
         @org.springframework.web.bind.annotation.RequestParam("password") String password,
         HttpSession session) {
+        logger.info("Intento de autenticación: usuario={}", username);
+        
         try {
             UsernamePasswordAuthenticationToken token =
                     new UsernamePasswordAuthenticationToken(username, password);
             Authentication auth = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            logger.info("Autenticación exitosa: usuario={}", username);
+            
             // Persist SecurityContext in HTTP session so Spring Security recognizes the login across requests
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
@@ -74,17 +82,20 @@ public class AuthController {
                 if (u.getRol() != null && u.getRol().getTipoRol() != null) {
                     switch (u.getRol().getTipoRol()) {
                         case ADMIN:
+                            logger.info("Admin autenticado: {}", u.getEmail());
                             session.setAttribute("usuarioNombre", u.getEmail());
                             return "redirect:/admin/dashboard";
                         case TECNICO:
-                            tecnicoRepository.findByUsuario_Email(u.getEmail()).ifPresent(t ->
-                                session.setAttribute("usuarioNombre", t.getNombres() + " " + t.getApellidoPaterno())
-                            );
+                            tecnicoRepository.findByUsuario_Email(u.getEmail()).ifPresent(t -> {
+                                session.setAttribute("usuarioNombre", t.getNombres() + " " + t.getApellidoPaterno());
+                                logger.info("Técnico autenticado: {}", u.getEmail());
+                            });
                             return "redirect:/tecnicos/panel";
                         case CLIENTE:
-                            clienteRepository.findByUsuario_Email(u.getEmail()).ifPresent(c ->
-                                session.setAttribute("usuarioNombre", c.getNombres() + " " + c.getApellidoPaterno())
-                            );
+                            clienteRepository.findByUsuario_Email(u.getEmail()).ifPresent(c -> {
+                                session.setAttribute("usuarioNombre", c.getNombres() + " " + c.getApellidoPaterno());
+                                logger.info("Cliente autenticado: {}", u.getEmail());
+                            });
                             return "redirect:/"; // home for clients
                         default:
                             session.setAttribute("usuarioNombre", u.getEmail());
@@ -94,7 +105,11 @@ public class AuthController {
             }
             return "redirect:/"; // fallback
         } catch (AuthenticationException ex) {
+            logger.warn("Fallo de autenticación: usuario={}, causa={}", username, ex.getMessage());
             return "redirect:/auth/login?error";
+        } catch (Exception ex) {
+            logger.error("Error inesperado en autenticación: usuario={}, causa={}", username, ex.getMessage());
+            return "redirect:/auth/login?error=server";
         }
     }
 

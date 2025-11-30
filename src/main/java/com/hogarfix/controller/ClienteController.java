@@ -107,6 +107,9 @@ public class ClienteController {
 
     @PostMapping("/registro")
     public String registrarCliente(@ModelAttribute Cliente cliente, Model model, HttpSession session) {
+        String email = cliente != null && cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : "desconocido";
+        logger.info("Iniciando registro de cliente: email={}", email);
+        
         try {
             // Aseguramos username a partir del email si no se proporcionó
             if (cliente.getUsuario() != null && (cliente.getUsuario().getUsername() == null || cliente.getUsuario().getUsername().isEmpty())) {
@@ -121,24 +124,29 @@ public class ClienteController {
                     if (ciudadOpt.isPresent()) {
                         cliente.getDireccion().setCiudad(ciudadOpt.get());
                     } else {
+                        logger.warn("Ciudad seleccionada no válida para cliente: {}", email);
                         throw new RuntimeException("Ciudad seleccionada no válida");
                     }
                 } else {
+                    logger.warn("No se seleccionó ciudad para cliente: {}", email);
                     throw new RuntimeException("Seleccione una ciudad");
                 }
             } else {
+                logger.warn("Dirección incompleta para cliente: {}", email);
                 throw new RuntimeException("Dirección incompleta");
             }
 
             // Guarda el cliente y luego autentica la sesión automáticamente
             String rawPassword = cliente.getUsuario().getPassword();
             Cliente clienteGuardado = clienteService.registrarCliente(cliente);
+            logger.info("Cliente registrado exitosamente: email={}, id={}", email, clienteGuardado.getIdCliente());
 
             // Autenticar usando AuthenticationManager para establecer SecurityContext
             UsernamePasswordAuthenticationToken token =
                     new UsernamePasswordAuthenticationToken(clienteGuardado.getUsuario().getEmail(), rawPassword);
             Authentication auth = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            logger.info("Cliente autenticado automáticamente tras registro: email={}", email);
             // Persist SecurityContext in HTTP session so Spring Security recognizes the login across requests
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
@@ -151,6 +159,7 @@ public class ClienteController {
 
             return "redirect:/";
         } catch (RuntimeException e) {
+            logger.error("Error al registrar cliente: email={}, causa={}", email, e.getMessage());
             model.addAttribute("error", e.getMessage());
             // volver a cargar ciudades para el formulario en caso de error
             model.addAttribute("ciudades", ciudadService.listarCiudades());

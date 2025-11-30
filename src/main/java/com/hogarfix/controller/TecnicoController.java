@@ -86,29 +86,33 @@ public class TecnicoController {
         @RequestParam(value = "fotoPerfilFile", required = false) MultipartFile fotoFile,
         @RequestParam("categoriaId") Long categoriaId,
         Model model) throws IOException {
-        log.info("Iniciando registro de técnico: email={}", tecnico != null && tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : "(sin usuario)");
+        
+        String email = tecnico != null && tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : "desconocido";
+        log.info("Iniciando registro de técnico: email={}", email);
 
-        // procesar archivo (certificado)
-        if (archivo != null && !archivo.isEmpty()) {
-            String rutaRel = saveUploadedFile(archivo, "certificados");
-            tecnico.setCertificadoPdf(rutaRel);
-            log.info("Certificado guardado: {}", rutaRel);
-        }
-
-        // procesar foto de perfil (opcional)
-        if (fotoFile != null && !fotoFile.isEmpty()) {
-            String contentType = fotoFile.getContentType();
-            if (contentType == null || !(contentType.equalsIgnoreCase("image/png") || contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/jpg"))) {
-                model.addAttribute("error", "La foto de perfil debe ser PNG o JPG/JPEG");
-                model.addAttribute("ciudades", ciudadService.listarCiudades());
-                model.addAttribute("categorias", categoriaService.listarCategorias());
-                return "tecnico/registrotec";
+        try {
+            // procesar archivo (certificado)
+            if (archivo != null && !archivo.isEmpty()) {
+                String rutaRel = saveUploadedFile(archivo, "certificados");
+                tecnico.setCertificadoPdf(rutaRel);
+                log.info("Certificado guardado: {}", rutaRel);
             }
 
-            String rutaRel = saveUploadedFile(fotoFile, "tecnicos");
-            tecnico.setFotoPerfil(rutaRel);
-            log.info("Foto de perfil guardada: {}", rutaRel);
-        }
+            // procesar foto de perfil (opcional)
+            if (fotoFile != null && !fotoFile.isEmpty()) {
+                String contentType = fotoFile.getContentType();
+                if (contentType == null || !(contentType.equalsIgnoreCase("image/png") || contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/jpg"))) {
+                    log.warn("Foto de perfil rechazada para técnico {}: tipo de contenido inválido ({})", email, contentType);
+                    model.addAttribute("error", "La foto de perfil debe ser PNG o JPG/JPEG");
+                    model.addAttribute("ciudades", ciudadService.listarCiudades());
+                    model.addAttribute("categorias", categoriaService.listarCategorias());
+                    return "tecnico/registrotec";
+                }
+
+                String rutaRel = saveUploadedFile(fotoFile, "tecnicos");
+                tecnico.setFotoPerfil(rutaRel);
+                log.info("Foto de perfil guardada: {}", rutaRel);
+            }
 
             // asegurar username desde email si no viene
             if (tecnico.getUsuario() != null && (tecnico.getUsuario().getUsername() == null || tecnico.getUsuario().getUsername().isEmpty())) {
@@ -123,17 +127,21 @@ public class TecnicoController {
                     if (ciudadOpt.isPresent()) {
                         tecnico.getDireccion().setCiudad(ciudadOpt.get());
                     } else {
+                        log.warn("Ciudad seleccionada no válida para técnico: {}", email);
                         throw new RuntimeException("Ciudad seleccionada no válida");
                     }
                 } else {
+                    log.warn("No se seleccionó ciudad para técnico: {}", email);
                     throw new RuntimeException("Seleccione una ciudad");
                 }
             } else {
+                log.warn("Dirección incompleta para técnico: {}", email);
                 throw new RuntimeException("Dirección incompleta");
             }
 
             // validar que se haya subido el certificado (campo obligatorio en la entidad)
             if (tecnico.getCertificadoPdf() == null || tecnico.getCertificadoPdf().isEmpty()) {
+                log.warn("Certificado PDF faltante para técnico: {}", email);
                 model.addAttribute("error", "Debe subir un certificado PDF");
                 model.addAttribute("ciudades", ciudadService.listarCiudades());
                 model.addAttribute("categorias", categoriaService.listarCategorias());
@@ -143,6 +151,7 @@ public class TecnicoController {
             // Validar y asignar categoría
             var categoriaOpt = categoriaService.buscarPorId(categoriaId);
             if (categoriaOpt.isEmpty()) {
+                log.warn("Categoría no válida para técnico {}: categoriaId={}", email, categoriaId);
                 model.addAttribute("error", "Debe seleccionar una categoría válida");
                 model.addAttribute("ciudades", ciudadService.listarCiudades());
                 model.addAttribute("categorias", categoriaService.listarCategorias());
@@ -156,12 +165,25 @@ public class TecnicoController {
                 .build();
             tecnico.setCategorias(List.of(tecnicoCategoria));
 
-        Tecnico saved = tecnicoService.registrarTecnico(tecnico);
-        log.info("Técnico registrado correctamente: email={}", tecnico.getUsuario().getEmail());
+            Tecnico saved = tecnicoService.registrarTecnico(tecnico);
+            log.info("Técnico registrado exitosamente: email={}, id={}, categoria={}", email, saved.getIdTecnico(), categoriaOpt.get().getNombre());
 
-        // EmailService maneja internamente excepciones, así que no es necesario try/catch aquí
-        emailService.sendWelcomeEmail(saved.getUsuario().getEmail(), saved.getNombres());
-        return "redirect:/tecnicos/login?registro=exitoso";
+            // EmailService maneja internamente excepciones, así que no es necesario try/catch aquí
+            emailService.sendWelcomeEmail(saved.getUsuario().getEmail(), saved.getNombres());
+            return "redirect:/tecnicos/login?registro=exitoso";
+        } catch (RuntimeException e) {
+            log.error("Error al registrar técnico: email={}, causa={}", email, e.getMessage());
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("ciudades", ciudadService.listarCiudades());
+            model.addAttribute("categorias", categoriaService.listarCategorias());
+            return "tecnico/registrotec";
+        } catch (IOException e) {
+            log.error("Error de I/O al registrar técnico: email={}, causa={}", email, e.getMessage());
+            model.addAttribute("error", "Error al procesar los archivos. Intente nuevamente.");
+            model.addAttribute("ciudades", ciudadService.listarCiudades());
+            model.addAttribute("categorias", categoriaService.listarCategorias());
+            return "tecnico/registrotec";
+        }
     }
 
     @PostMapping("/login")
