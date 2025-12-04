@@ -5,6 +5,8 @@ import com.hogarfix.model.Pago;
 import com.hogarfix.service.ClienteService;
 import com.hogarfix.service.PagoService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ public class VistaPagoController {
 
     private final PagoService pagoService;
     private final ClienteService clienteService;
+    private static final Logger logger = LoggerFactory.getLogger(VistaPagoController.class);
 
     @GetMapping("/pagos")
     public String verPagos(Principal principal, HttpSession session, Model model, @org.springframework.web.bind.annotation.RequestParam(value = "pagoId", required = false) Long pagoId, jakarta.servlet.http.HttpServletRequest request) {
@@ -40,15 +43,35 @@ public class VistaPagoController {
         }
 
         List<Pago> pagos = pagoService.listarPorCliente(cliente);
+        // Map to DTOs to send to the view (avoid exposing JPA entities)
+        var pagosDto = pagos.stream().map(com.hogarfix.mapper.PagoMapper::toDTO).toList();
+        if (logger.isInfoEnabled()) {
+            logger.info("/pagos requested by cliente.id={}. pagos.size={}", cliente.getIdCliente(), pagos == null ? 0 : pagos.size());
+            if (pagos != null && !pagos.isEmpty()) {
+                Pago first = pagos.get(0);
+                logger.info("first pago id={} servicioPresent={} clientePresent={}",
+                        first.getIdPago(),
+                        first.getServicio() != null,
+                        first.getCliente() != null);
+                if (first.getServicio() != null) {
+                    var s = first.getServicio();
+                    logger.info("servicio id={} descripcionPresent={} categoriaPresent={} tecnicoPresent={}",
+                            s.getIdServicio(),
+                            s.getDescripcion() != null && !s.getDescripcion().isBlank(),
+                            s.getCategoria() != null,
+                            s.getTecnico() != null);
+                }
+            }
+        }
         if (pagoId != null) {
-            // move selected pago to the front if present
-            pagos = pagos.stream().sorted((a, b) -> {
-                if (a.getIdPago().equals(pagoId)) return -1;
-                if (b.getIdPago().equals(pagoId)) return 1;
+            // move selected pago to the front if present (operate on DTOs)
+            pagosDto = pagosDto.stream().sorted((a, b) -> {
+                if (a.getIdPago() != null && a.getIdPago().equals(pagoId)) return -1;
+                if (b.getIdPago() != null && b.getIdPago().equals(pagoId)) return 1;
                 return 0;
             }).toList();
         }
-        model.addAttribute("pagos", pagos);
+        model.addAttribute("pagos", pagosDto);
         // Exponer token CSRF para llamadas fetch desde JS
         Object csrf = request.getAttribute("_csrf");
         if (csrf != null) model.addAttribute("_csrf", csrf);

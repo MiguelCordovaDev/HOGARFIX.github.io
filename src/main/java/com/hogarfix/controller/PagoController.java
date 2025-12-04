@@ -1,6 +1,8 @@
 package com.hogarfix.controller;
 
 import com.hogarfix.model.Pago;
+import com.hogarfix.dto.PagoDTO;
+import com.hogarfix.mapper.PagoMapper;
 import com.hogarfix.service.PagoService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -16,8 +18,10 @@ public class PagoController {
     private final PagoService pagoService;
 
     @GetMapping
-    public ResponseEntity<List<Pago>> listarPagos() {
-        return ResponseEntity.ok(pagoService.listarPagos());
+    public ResponseEntity<List<PagoDTO>> listarPagos() {
+        var pagos = pagoService.listarPagos();
+        var dtos = pagos.stream().map(PagoMapper::toDTO).toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping

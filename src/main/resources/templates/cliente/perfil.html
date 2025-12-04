@@ -25,7 +25,7 @@
     <section class="bg-white p-6 rounded-lg shadow-md">
       <div class="flex flex-col items-center">
         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Cliente" class="w-24 h-24 rounded-full mb-3">
-        <h2 class="text-lg font-semibold" th:text="${cliente.nombres} + ' ' + ${cliente.apellidoPaterno}">Nombre Cliente</h2>
+        <h2 class="text-lg font-semibold" th:text="${cliente.nombres + ' ' + cliente.apellidoPaterno}">Nombre Cliente</h2>
         <p class="text-gray-500 text-sm" th:text="${cliente.dni}">DNI</p>
       </div>
 
@@ -33,7 +33,7 @@
         <p><i data-lucide="mail" class="inline w-4 h-4"></i> <span th:text="${cliente.usuario.email}">email@ejemplo.com</span></p>
         <p><i data-lucide="phone" class="inline w-4 h-4"></i> <span th:text="${cliente.telefono}">+51 9xx xxx xxx</span></p>
         <p><i data-lucide="map-pin" class="inline w-4 h-4"></i>
-          <span th:text="${cliente.direccion.calle} + ' ' + ${cliente.direccion.numero}">Calle y numero</span>,
+          <span th:text="${cliente.direccion.calle + ' ' + cliente.direccion.numero}">Calle y numero</span>,
           <span th:text="${cliente.direccion.ciudad.nombre}">Ciudad</span>
         </p>
         <p th:if="${cliente.direccion.referencia != null}"><i data-lucide="map-pin" class="inline w-4 h-4"></i> <span th:text="${cliente.direccion.referencia}">Referencia</span></p>
@@ -59,8 +59,8 @@
           </thead>
           <tbody>
             <tr th:each="p : ${pagosPendientes}" class="border-t">
-              <td class="px-2 py-2" th:text="${p.servicio != null and p.servicio.fechaFinalizacion != null} ? ${#temporals.format(p.servicio.fechaFinalizacion, 'dd/MM/yyyy')} : '-'">01/01/2025</td>
-              <td class="px-2 py-2" th:text="${p.servicio != null and p.servicio.descripcion != null} ? p.servicio.descripcion : (p.servicio != null and p.servicio.categoria != null ? p.servicio.categoria.nombre : 'Servicio')">Reparación de lavadora</td>
+              <td class="px-2 py-2" th:text="${p.servicio != null and p.servicio.fechaFinalizacion != null ? #temporals.format(p.servicio.fechaFinalizacion, 'dd/MM/yyyy') : '-'}">01/01/2025</td>
+              <td class="px-2 py-2" th:text="${p.servicio != null and p.servicio.descripcion != null ? p.servicio.descripcion : (p.servicio != null and p.servicio.categoria != null ? p.servicio.categoria.nombre : 'Servicio')}">Reparación de lavadora</td>
               <td class="px-2 py-2" th:text="${'S/ ' + p.monto}">S/ 120.00</td>
               <td class="px-2 py-2">
                 <a th:href="@{/pagos(pagoId=${p.idPago})}" class="px-3 py-1 bg-cyan-500 text-white rounded">Pagar</a>

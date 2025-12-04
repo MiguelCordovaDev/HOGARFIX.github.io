@@ -26,6 +26,15 @@ public class PagoDTO {
     private LocalDateTime fechaPago;
     private String estado;
 
+    // Campos derivados para la vista (evitan exponer entidades JPA en la plantilla)
+    private String servicioDescripcion;
+    private String categoriaNombre;
+    private String tecnicoNombres;
+    private String tecnicoApellidoPaterno;
+    private String tecnicoApellidoMaterno;
+    private LocalDateTime servicioFechaFinalizacion;
+    private java.math.BigDecimal servicioMonto;
+
     // Campos de auditoría opcionales (si los deseas mostrar en respuesta)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

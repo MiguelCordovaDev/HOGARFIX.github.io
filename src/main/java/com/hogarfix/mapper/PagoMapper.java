@@ -12,7 +12,7 @@ public class PagoMapper {
             return null;
         }
 
-        return PagoDTO.builder()
+        var builder = PagoDTO.builder()
                 .idPago(pago.getIdPago())
                 .idServicio(pago.getServicio() != null ? pago.getServicio().getIdServicio() : null)
                 .idCliente(pago.getCliente() != null ? pago.getCliente().getIdCliente() : null)
@@ -20,8 +20,24 @@ public class PagoMapper {
                 .metodoPago(pago.getMetodoPago())
                 .fechaPago(pago.getFechaPago())
                 .estado(pago.getEstado())
-                .createdAt(pago.getCreatedAt())
-                .build();
+                .createdAt(pago.getCreatedAt());
+
+        if (pago.getServicio() != null) {
+            var s = pago.getServicio();
+            builder.servicioDescripcion(s.getDescripcion())
+                    .servicioMonto(s.getMonto())
+                    .servicioFechaFinalizacion(s.getFechaFinalizacion());
+
+            if (s.getCategoria() != null) builder.categoriaNombre(s.getCategoria().getNombre());
+            if (s.getTecnico() != null) {
+                var t = s.getTecnico();
+                builder.tecnicoNombres(t.getNombres())
+                        .tecnicoApellidoPaterno(t.getApellidoPaterno())
+                        .tecnicoApellidoMaterno(t.getApellidoMaterno());
+            }
+        }
+
+        return builder.build();
     }
 
     public static Pago toEntity(PagoDTO dto) {

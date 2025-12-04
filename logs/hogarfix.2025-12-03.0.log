@@ -1,0 +1,135 @@
+2025-12-03 22:57:13.911 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21.0.7 with PID 6724 (C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\target\classes started by Familia in C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io)
+2025-12-03 22:57:13.919 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-03 22:57:18.435 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-03 22:57:18.620 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4568 ms
+2025-12-03 22:57:20.334 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-03 22:57:20.758 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@275902e1
+2025-12-03 22:57:20.760 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-03 22:57:26.259 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-03 22:57:28.035 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-03 22:57:28.055 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 15.686 seconds (process running for 16.343)
+2025-12-03 22:57:28.460 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-03 22:57:28.535 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-03 22:57:28.536 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-03 22:57:28.565 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-03 22:57:28.571 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-03 22:57:28.583 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-03 22:57:53.682 [http-nio-8080-exec-3] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=rosa@example.com
+2025-12-03 22:57:53.882 [http-nio-8080-exec-3] WARN  c.hogarfix.controller.AuthController - Fallo de autenticación: usuario=rosa@example.com, causa=Credenciales erróneas
+2025-12-03 22:57:58.132 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=rosa@example.com
+2025-12-03 22:57:58.229 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=rosa@example.com
+2025-12-03 22:57:58.242 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: rosa@example.com
+2025-12-03 22:58:02.688 [http-nio-8080-exec-7] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 22:58:02.717 [http-nio-8080-exec-10] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicomujer.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicomujer.jpg
+2025-12-03 22:58:02.932 [http-nio-8080-exec-8] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 22:58:02.939 [http-nio-8080-exec-9] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicomujer.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicomujer.jpg
+2025-12-03 22:58:38.873 [http-nio-8080-exec-3] INFO  c.h.controller.TecnicoController - Intento de login técnico: username=juan@example.com
+2025-12-03 22:58:38.964 [http-nio-8080-exec-3] INFO  c.h.controller.TecnicoController - Autenticación exitosa para usuario=juan@example.com
+2025-12-03 22:58:39.142 [http-nio-8080-exec-4] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 22:58:40.676 [http-nio-8080-exec-10] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 22:58:41.534 [http-nio-8080-exec-1] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 22:58:45.515 [http-nio-8080-exec-1] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=rosa@example.com
+2025-12-03 22:58:45.604 [http-nio-8080-exec-1] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=rosa@example.com
+2025-12-03 22:58:45.611 [http-nio-8080-exec-1] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: rosa@example.com
+2025-12-03 23:07:26.419 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21.0.7 with PID 14964 (C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\target\classes started by Familia in C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io)
+2025-12-03 23:07:26.425 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-03 23:07:30.317 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-03 23:07:30.504 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3993 ms
+2025-12-03 23:07:33.000 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-03 23:07:33.459 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@98722ef
+2025-12-03 23:07:33.464 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-03 23:07:39.470 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-03 23:07:41.658 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-03 23:07:41.714 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 16.342 seconds (process running for 16.97)
+2025-12-03 23:07:42.149 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-03 23:07:42.159 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-03 23:07:42.182 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-03 23:07:42.182 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-03 23:07:42.183 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-03 23:07:42.183 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-03 23:08:35.912 [http-nio-8080-exec-10] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=rosa@example.com
+2025-12-03 23:08:36.143 [http-nio-8080-exec-10] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=rosa@example.com
+2025-12-03 23:08:36.153 [http-nio-8080-exec-10] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: rosa@example.com
+2025-12-03 23:08:39.864 [http-nio-8080-exec-4] INFO  c.h.controller.VistaPagoController - /pagos requested by cliente.id=3. pagos.size=1
+2025-12-03 23:08:39.865 [http-nio-8080-exec-4] INFO  c.h.controller.VistaPagoController - first pago id=1 servicioPresent=true clientePresent=true
+2025-12-03 23:08:39.865 [http-nio-8080-exec-4] INFO  c.h.controller.VistaPagoController - servicio id=1 descripcionPresent=true categoriaPresent=true tecnicoPresent=true
+2025-12-03 23:12:13.857 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication v0.0.1-SNAPSHOT using Java 21.0.7 with PID 11856 (C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\target\hogarfix-0.0.1-SNAPSHOT.jar started by Familia in C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io)
+2025-12-03 23:12:13.878 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-03 23:12:16.441 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-03 23:12:16.700 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 196 ms. Found 13 JPA repository interfaces.
+2025-12-03 23:12:18.492 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-03 23:12:18.553 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-12-03 23:12:18.558 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-03 23:12:18.559 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-12-03 23:12:18.647 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-03 23:12:18.649 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4669 ms
+2025-12-03 23:12:19.469 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-03 23:12:19.672 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-12-03 23:12:20.022 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-03 23:12:20.789 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-03 23:12:20.899 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-03 23:12:21.338 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6eb00cbe
+2025-12-03 23:12:21.342 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-03 23:12:21.459 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQL8Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-03 23:12:21.473 [main] WARN  org.hibernate.orm.deprecation - HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2025-12-03 23:12:21.510 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-03 23:12:23.404 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-03 23:12:23.651 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-03 23:12:25.060 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-03 23:12:26.926 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name userDetailsService
+2025-12-03 23:12:27.706 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-03 23:12:28.011 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2025-12-03 23:12:28.774 [main] INFO  o.s.v.b.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2025-12-03 23:12:29.717 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-12-03 23:12:29.752 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-03 23:12:29.792 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 17.195 seconds (process running for 18.505)
+2025-12-03 23:12:30.099 [main] INFO  c.h.c.ApplicationStartupListener - ═══════════════════════════════════════════════════════════════
+2025-12-03 23:12:30.104 [main] INFO  c.h.c.ApplicationStartupListener - ✓ hogarfix lanzado exitosamente
+2025-12-03 23:12:30.107 [main] INFO  c.h.c.ApplicationStartupListener - ✓ Perfil activo: default
+2025-12-03 23:12:30.109 [main] INFO  c.h.c.ApplicationStartupListener - ✓ Puerto: 8080
+2025-12-03 23:12:30.109 [main] INFO  c.h.c.ApplicationStartupListener - ✓ La aplicación está lista para recibir solicitudes
+2025-12-03 23:12:30.110 [main] INFO  c.h.c.ApplicationStartupListener - ═══════════════════════════════════════════════════════════════
+2025-12-03 23:46:54.555 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21.0.7 with PID 11368 (C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\target\classes started by Familia in C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io)
+2025-12-03 23:46:54.558 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-03 23:46:57.284 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-03 23:46:57.425 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2768 ms
+2025-12-03 23:46:58.477 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-03 23:46:59.323 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2833c093
+2025-12-03 23:46:59.326 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-03 23:47:07.845 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-03 23:47:08.924 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-03 23:47:08.938 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 15.214 seconds (process running for 15.75)
+2025-12-03 23:47:09.421 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-03 23:47:09.422 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-03 23:47:09.422 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-03 23:47:09.423 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-03 23:47:09.423 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-03 23:47:09.423 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-03 23:52:01.465 [http-nio-8080-exec-10] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=rosa@example.com
+2025-12-03 23:52:01.704 [http-nio-8080-exec-10] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=rosa@example.com
+2025-12-03 23:52:01.738 [http-nio-8080-exec-10] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: rosa@example.com
+2025-12-03 23:52:07.933 [http-nio-8080-exec-8] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 23:52:08.026 [http-nio-8080-exec-7] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 23:52:08.082 [http-nio-8080-exec-9] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicomujer.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicomujer.jpg
+2025-12-03 23:52:40.896 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=oscar@example.com
+2025-12-03 23:52:40.985 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=oscar@example.com
+2025-12-03 23:52:40.990 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: oscar@example.com
+2025-12-03 23:52:49.963 [http-nio-8080-exec-6] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=juan@example.com
+2025-12-03 23:52:50.053 [http-nio-8080-exec-6] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=juan@example.com
+2025-12-03 23:52:50.062 [http-nio-8080-exec-6] INFO  c.hogarfix.controller.AuthController - Técnico autenticado: Juan@example.com
+2025-12-03 23:52:50.127 [http-nio-8080-exec-8] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 23:52:51.888 [http-nio-8080-exec-3] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 23:52:52.723 [http-nio-8080-exec-4] INFO  c.h.controller.TecnicoController - Solicitando foto: tecnicohombre.jpg -> path=C:\Users\Familia\Desktop\repoproyecto\HOGARFIX.github.io\uploads\tecnicos\tecnicohombre.jpg
+2025-12-03 23:52:58.008 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=rosa@example.com
+2025-12-03 23:52:58.098 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=rosa@example.com
+2025-12-03 23:52:58.104 [http-nio-8080-exec-2] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: rosa@example.com
+2025-12-03 23:53:00.868 [http-nio-8080-exec-7] INFO  c.h.controller.VistaPagoController - /pagos requested by cliente.id=3. pagos.size=1
+2025-12-03 23:53:00.869 [http-nio-8080-exec-7] INFO  c.h.controller.VistaPagoController - first pago id=1 servicioPresent=true clientePresent=true
+2025-12-03 23:53:00.869 [http-nio-8080-exec-7] INFO  c.h.controller.VistaPagoController - servicio id=1 descripcionPresent=true categoriaPresent=true tecnicoPresent=true

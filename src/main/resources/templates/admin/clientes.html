@@ -34,8 +34,8 @@
               <td th:text="${cliente.idCliente}">-</td>
               <td>
                 <span th:text="${cliente.nombres ?: 'N/A'}"></span>
-                <span th:if="${cliente.apellidoPaterno}" th:text="' ' + ${cliente.apellidoPaterno}"></span>
-                <span th:if="${cliente.apellidoMaterno}" th:text="' ' + ${cliente.apellidoMaterno}"></span>
+                <span th:if="${cliente.apellidoPaterno}" th:text="${' ' + cliente.apellidoPaterno}"></span>
+                <span th:if="${cliente.apellidoMaterno}" th:text="${' ' + cliente.apellidoMaterno}"></span>
               </td>
               <td th:text="${cliente.usuario?.email ?: 'N/A'}">-</td>
               <td th:text="${cliente.telefono ?: 'N/A'}">-</td>

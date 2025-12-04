@@ -41,7 +41,7 @@
         <p><i data-lucide="mail" class="inline w-4 h-4"></i> <span th:text="${tecnico.usuario.email}">email@ejemplo.com</span></p>
   <p><i data-lucide="phone" class="inline w-4 h-4"></i> <span th:text="${tecnico.telefono}">+51 9xx xxx xxx</span></p>
         <p><i data-lucide="map-pin" class="inline w-4 h-4"></i>
-          <span th:text="${tecnico.direccion.calle} + ' ' + ${tecnico.direccion.numero}">Calle y numero</span>,
+          <span th:text="${tecnico.direccion.calle + ' ' + tecnico.direccion.numero}">Calle y numero</span>,
           <span th:text="${tecnico.direccion.ciudad.nombre}">Ciudad</span>
         </p>
         <p th:if="${tecnico.direccion.referencia != null}"><i data-lucide="map-pin" class="inline w-4 h-4"></i> <span th:text="${tecnico.direccion.referencia}">Referencia</span></p>

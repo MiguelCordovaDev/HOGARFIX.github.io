@@ -35,8 +35,8 @@
               <td th:text="${tecnico.idTecnico}">-</td>
               <td>
                 <span th:text="${tecnico.nombres ?: 'N/A'}"></span>
-                <span th:if="${tecnico.apellidoPaterno}" th:text="' ' + ${tecnico.apellidoPaterno}"></span>
-                <span th:if="${tecnico.apellidoMaterno}" th:text="' ' + ${tecnico.apellidoMaterno}"></span>
+                <span th:if="${tecnico.apellidoPaterno}" th:text="${' ' + tecnico.apellidoPaterno}"></span>
+                <span th:if="${tecnico.apellidoMaterno}" th:text="${' ' + tecnico.apellidoMaterno}"></span>
               </td>
               <td>
                 <span th:if="${tecnico.categorias != null and tecnico.categorias.size() > 0}" th:text="${tecnico.categorias[0].categoria?.nombre ?: 'N/A'}">N/A</span>
