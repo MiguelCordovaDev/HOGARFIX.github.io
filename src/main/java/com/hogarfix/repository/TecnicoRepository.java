@@ -26,5 +26,10 @@ public interface TecnicoRepository extends JpaRepository<Tecnico, Long> {
     // Verificar si un email ya existe
     boolean existsByUsuario_Email(String email);
 
+    // Verificar si un dni ya existe
+    boolean existsByDni(String dni);
+
+    Optional<Tecnico> findByDni(String dni);
+
     Optional<Tecnico> findByUsuario_Email(String email);
 }

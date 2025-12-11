@@ -16,6 +16,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import com.hogarfix.model.base.Auditable;
@@ -42,7 +44,7 @@ public class Tecnico extends Auditable {
     @Column(length = 100)
     private String apellidoMaterno;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, unique = true)
     private String dni;
 
     @Column(length = 20)
@@ -50,7 +52,7 @@ public class Tecnico extends Auditable {
 
     @Column(nullable = false, length = 255)
     private String certificadoPdf; // ruta o nombre del archivo del certificado
-    
+
     @Column(length = 255)
     private String fotoPerfil; // ruta relativa a uploads/tecnicos/...
 
@@ -62,8 +64,9 @@ public class Tecnico extends Auditable {
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
 
+    @Builder.Default
     @OneToMany(mappedBy = "tecnico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TecnicoCategoria> categorias;
+    private List<TecnicoCategoria> categorias = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "promedio_calificacion")

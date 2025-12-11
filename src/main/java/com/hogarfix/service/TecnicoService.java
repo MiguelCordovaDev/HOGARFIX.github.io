@@ -6,8 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.hogarfix.model.Tecnico;
+import com.hogarfix.model.TecnicoCategoria;
+import com.hogarfix.model.Usuario;
+import com.hogarfix.model.Categoria;
 import com.hogarfix.model.Rol;
 import com.hogarfix.repository.TecnicoRepository;
+import com.hogarfix.repository.CategoriaRepository;
 import com.hogarfix.repository.RolRepository;
 import com.hogarfix.repository.UsuarioRepository;
 
@@ -23,6 +27,7 @@ public class TecnicoService {
     private final PasswordEncoder passwordEncoder;
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
+    private final CategoriaRepository categoriaRepository;
 
     public Tecnico registrarTecnico(Tecnico tecnico) {
         try {
@@ -31,30 +36,47 @@ public class TecnicoService {
                 throw new RuntimeException("Usuario o email inválido");
             }
 
-            if (tecnicoRepository.existsByUsuario_Email(tecnico.getUsuario().getEmail())) {
-                log.warn("Intento de registro con email duplicado: {}", tecnico.getUsuario().getEmail());
+            String email = tecnico.getUsuario().getEmail();
+            String dni = tecnico.getDni();
+
+            // Validar email duplicado
+            if (tecnicoRepository.existsByUsuario_Email(email)) {
+                log.warn("Intento de registro con email duplicado: {}", email);
                 throw new RuntimeException("El correo ya está registrado");
             }
 
-            // Asignar rol TECNICO por defecto (crear si no existe)
+            // Validar DNI duplicado
+            if (tecnicoRepository.existsByDni(dni)) {
+                log.warn("Intento de registro con DNI duplicado: {}", dni);
+                throw new RuntimeException("El DNI ya está registrado");
+            }
+
+            // Rol por defecto
             Rol rol = rolRepository.findByNombre("TECNICO")
-                    .orElseGet(() -> rolRepository.save(Rol.builder()
-                            .nombre("TECNICO")
-                            .descripcion("Rol por defecto para técnicos")
-                            .build()));
+                    .orElseGet(() -> rolRepository.save(
+                            Rol.builder()
+                                    .nombre("TECNICO")
+                                    .descripcion("Rol por defecto para técnicos")
+                                    .build()));
 
             tecnico.getUsuario().setRol(rol);
             tecnico.getUsuario().setPassword(passwordEncoder.encode(tecnico.getUsuario().getPassword()));
 
-            // Guardar usuario primero para evitar TransientPropertyValueException
+            // Guardar usuario primero
             var usuarioGuardado = usuarioRepository.save(tecnico.getUsuario());
             tecnico.setUsuario(usuarioGuardado);
+
             Tecnico saved = tecnicoRepository.save(tecnico);
-            log.info("Técnico registrado exitosamente en BD: email={}, id={}", tecnico.getUsuario().getEmail(), saved.getIdTecnico());
+
+            log.info("Técnico registrado exitosamente: email={}, dni={}, id={}",
+                    email, dni, saved.getIdTecnico());
+
             return saved;
+
         } catch (Exception e) {
-            log.error("Error al registrar técnico en BD: email={}, causa={}", 
-                tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : "desconocido", e.getMessage(), e);
+            log.error("Error al registrar técnico: email={}, causa={}",
+                    tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : "desconocido",
+                    e.getMessage(), e);
             throw e;
         }
     }
@@ -102,11 +124,33 @@ public class TecnicoService {
         }
     }
 
+    public void actualizarCategorias(Tecnico tecnico, List<Long> idsCategoriasSeleccionadas) {
+
+        // 1. Limpiar categorías anteriores
+        tecnico.getCategorias().clear();
+
+        // 2. Reconstruir las relaciones
+        for (Long idCat : idsCategoriasSeleccionadas) {
+            Categoria categoria = categoriaRepository.findById(idCat)
+                    .orElseThrow(() -> new RuntimeException("Categoria no existe: " + idCat));
+
+            TecnicoCategoria tc = TecnicoCategoria.builder()
+                    .tecnico(tecnico)
+                    .categoria(categoria)
+                    .build();
+
+            tecnico.getCategorias().add(tc);
+        }
+
+        // 3. Guardar el técnico (cascade ALL hará el resto)
+        tecnicoRepository.save(tecnico);
+    }
+
     public Optional<Tecnico> autenticar(String email, String password) {
         try {
             var resultado = tecnicoRepository.findByUsuario_Email(email)
                     .filter(t -> passwordEncoder.matches(password, t.getUsuario().getPassword()));
-            
+
             if (resultado.isPresent()) {
                 log.info("Autenticación exitosa de técnico: {}", email);
             } else {
@@ -127,6 +171,25 @@ public class TecnicoService {
             log.error("Error al obtener técnico por email: {}", email, e);
             throw e;
         }
+    }
+
+    public Tecnico obtenerPorEmailODni(String emailAuth) {
+        // 1. Intentar por email
+        Optional<Tecnico> porEmail = tecnicoRepository.findByUsuario_Email(emailAuth);
+        if (porEmail.isPresent()) {
+            return porEmail.get();
+        }
+
+        // 2. Si no está por email, buscar por dni (ya que es único)
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(emailAuth);
+        if (usuario.isPresent()) {
+            // emailAuth corresponde a un usuario pero ya fue cambiado
+            // entonces obtenemos el técnico usando su DNI original
+            return tecnicoRepository.findByDni(usuario.get().getTecnico().getDni())
+                    .orElseThrow(() -> new RuntimeException("No se encontró técnico por DNI del usuario"));
+        }
+
+        throw new RuntimeException("No se encontró técnico por email o DNI: " + emailAuth);
     }
 
 }

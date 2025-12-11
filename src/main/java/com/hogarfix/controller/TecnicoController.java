@@ -1,18 +1,20 @@
 package com.hogarfix.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
-
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,17 +28,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.hogarfix.model.Servicio;
 import com.hogarfix.model.Tecnico;
 import com.hogarfix.model.TecnicoCategoria;
 import com.hogarfix.model.Usuario;
+import com.hogarfix.repository.TecnicoRepository;
+import com.hogarfix.repository.UsuarioRepository;
 import com.hogarfix.model.Direccion;
+import com.hogarfix.model.Categoria;
 import com.hogarfix.model.Ciudad;
 import com.hogarfix.service.CiudadService;
 import com.hogarfix.service.CategoriaService;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import com.hogarfix.service.ServicioService;
 import com.hogarfix.service.TecnicoService;
 import com.hogarfix.service.UsuarioService;
@@ -48,6 +57,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping("/tecnicos")
 public class TecnicoController {
+
+    private final UsuarioRepository usuarioRepository;
+
+    private final TecnicoRepository tecnicoRepository;
 
     private final TecnicoService tecnicoService;
     private final ServicioService servicioService; // ✅ Se inyecta correctamente
@@ -82,12 +95,13 @@ public class TecnicoController {
 
     @PostMapping("/registro")
     public String registrarTecnico(@ModelAttribute("tecnico") Tecnico tecnico,
-        @RequestParam("certificadoPdfFile") MultipartFile archivo,
-        @RequestParam(value = "fotoPerfilFile", required = false) MultipartFile fotoFile,
-        @RequestParam("categoriaId") Long categoriaId,
-        Model model) throws IOException {
-        
-        String email = tecnico != null && tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail() : "desconocido";
+            @RequestParam("certificadoPdfFile") MultipartFile archivo,
+            @RequestParam(value = "fotoPerfilFile", required = false) MultipartFile fotoFile,
+            @RequestParam("categoriaIds") List<Long> categoriaIds,
+            Model model) throws IOException {
+
+        String email = tecnico != null && tecnico.getUsuario() != null ? tecnico.getUsuario().getEmail()
+                : "desconocido";
         log.info("Iniciando registro de técnico: email={}", email);
 
         try {
@@ -101,8 +115,10 @@ public class TecnicoController {
             // procesar foto de perfil (opcional)
             if (fotoFile != null && !fotoFile.isEmpty()) {
                 String contentType = fotoFile.getContentType();
-                if (contentType == null || !(contentType.equalsIgnoreCase("image/png") || contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/jpg"))) {
-                    log.warn("Foto de perfil rechazada para técnico {}: tipo de contenido inválido ({})", email, contentType);
+                if (contentType == null || !(contentType.equalsIgnoreCase("image/png")
+                        || contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/jpg"))) {
+                    log.warn("Foto de perfil rechazada para técnico {}: tipo de contenido inválido ({})", email,
+                            contentType);
                     model.addAttribute("error", "La foto de perfil debe ser PNG o JPG/JPEG");
                     model.addAttribute("ciudades", ciudadService.listarCiudades());
                     model.addAttribute("categorias", categoriaService.listarCategorias());
@@ -115,7 +131,8 @@ public class TecnicoController {
             }
 
             // asegurar username desde email si no viene
-            if (tecnico.getUsuario() != null && (tecnico.getUsuario().getUsername() == null || tecnico.getUsuario().getUsername().isEmpty())) {
+            if (tecnico.getUsuario() != null
+                    && (tecnico.getUsuario().getUsername() == null || tecnico.getUsuario().getUsername().isEmpty())) {
                 tecnico.getUsuario().setUsername(tecnico.getUsuario().getEmail());
             }
 
@@ -148,27 +165,53 @@ public class TecnicoController {
                 return "tecnico/registrotec";
             }
 
-            // Validar y asignar categoría
-            var categoriaOpt = categoriaService.buscarPorId(categoriaId);
-            if (categoriaOpt.isEmpty()) {
-                log.warn("Categoría no válida para técnico {}: categoriaId={}", email, categoriaId);
-                model.addAttribute("error", "Debe seleccionar una categoría válida");
+            // Validar al menos una categoría seleccionada
+            if (categoriaIds == null || categoriaIds.isEmpty()) {
+                log.warn("No se seleccionaron categorías para el técnico {}", email);
+                model.addAttribute("error", "Debe seleccionar al menos una categoría");
                 model.addAttribute("ciudades", ciudadService.listarCiudades());
                 model.addAttribute("categorias", categoriaService.listarCategorias());
                 return "tecnico/registrotec";
             }
 
-            // Crear la relación TecnicoCategoria
-            TecnicoCategoria tecnicoCategoria = TecnicoCategoria.builder()
-                .categoria(categoriaOpt.get())
-                .tecnico(tecnico)
-                .build();
-            tecnico.setCategorias(List.of(tecnicoCategoria));
+            // Obtener categorías desde la BD
+            var categoriasSeleccionadas = categoriaIds.stream()
+                    .map(categoriaService::buscarPorId)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList();
+
+            if (categoriasSeleccionadas.isEmpty()) {
+                log.warn("IDs de categorías inválidos para técnico {}", email);
+                model.addAttribute("error", "Seleccione categorías válidas");
+                model.addAttribute("ciudades", ciudadService.listarCiudades());
+                model.addAttribute("categorias", categoriaService.listarCategorias());
+                return "tecnico/registrotec";
+            }
+
+            // Crear relación TecnicoCategoria
+            List<TecnicoCategoria> relaciones = categoriasSeleccionadas.stream()
+                    .map(cat -> TecnicoCategoria.builder()
+                            .tecnico(tecnico)
+                            .categoria(cat)
+                            .build())
+                    .collect(Collectors.toList());
+
+            // Asignar al técnico
+            tecnico.setCategorias(relaciones);
 
             Tecnico saved = tecnicoService.registrarTecnico(tecnico);
-            log.info("Técnico registrado exitosamente: email={}, id={}, categoria={}", email, saved.getIdTecnico(), categoriaOpt.get().getNombre());
 
-            // EmailService maneja internamente excepciones, así que no es necesario try/catch aquí
+            String categoriasLog = saved.getCategorias().stream()
+                    .map(tc -> tc.getCategoria().getNombre())
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("Sin categorías");
+
+            log.info("Técnico registrado exitosamente: email={}, id={}, categoria={}", email, saved.getIdTecnico(),
+                    categoriasLog);
+
+            // EmailService maneja internamente excepciones, así que no es necesario
+            // try/catch aquí
             emailService.sendWelcomeEmail(saved.getUsuario().getEmail(), saved.getNombres());
             return "redirect:/tecnicos/login?registro=exitoso";
         } catch (RuntimeException e) {
@@ -188,21 +231,21 @@ public class TecnicoController {
 
     @PostMapping("/login")
     public String procesarLoginTecnico(@RequestParam("username") String username,
-        @RequestParam("password") String password,
-        HttpSession session) {
+            @RequestParam("password") String password,
+            HttpSession session) {
         try {
-        log.info("Intento de login técnico: username={}", username);
-        UsernamePasswordAuthenticationToken token =
-            new UsernamePasswordAuthenticationToken(username, password);
-        Authentication auth = authenticationManager.authenticate(token);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        // Persistir el SecurityContext en la sesión para que Spring Security
-        // lo reconozca en las siguientes requests (consistente con AuthController)
-        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-        log.info("Autenticación exitosa para usuario={}", username);
+            log.info("Intento de login técnico: username={}", username);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+            Authentication auth = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // Persistir el SecurityContext en la sesión para que Spring Security
+            // lo reconozca en las siguientes requests (consistente con AuthController)
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            log.info("Autenticación exitosa para usuario={}", username);
 
             // verificar rol TECNICO
-            var usuarioOpt = usuarioService.buscarPorId(((com.hogarfix.model.Usuario) auth.getPrincipal()).getIdUsuario());
+            var usuarioOpt = usuarioService
+                    .buscarPorId(((com.hogarfix.model.Usuario) auth.getPrincipal()).getIdUsuario());
             if (usuarioOpt.isPresent()) {
                 Usuario u = usuarioOpt.get();
                 if (u.getRol() != null && u.getRol().getTipoRol() == com.hogarfix.model.enums.TipoRol.TECNICO) {
@@ -237,26 +280,31 @@ public class TecnicoController {
         }
     }
 
-    @GetMapping("/certificados/{nombreArchivo}")
-    public ResponseEntity<Resource> verCertificado(@PathVariable String nombreArchivo) throws IOException {
-        Path archivoPath = Paths.get(System.getProperty("user.dir"), "uploads", "certificados").resolve(nombreArchivo).normalize();
-        
-        // Verificar que el archivo existe
-        if (!Files.exists(archivoPath) || !Files.isReadable(archivoPath)) {
-            log.warn("Certificado no encontrado o no legible: {}", archivoPath);
-            return ResponseEntity.notFound().build();
-        }
-        
-        Resource recurso = new UrlResource(archivoPath.toUri());
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + nombreArchivo + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                .body(recurso);
-    }
+    // @GetMapping("/certificados/{nombreArchivo}")
+    // public ResponseEntity<Resource> verCertificado(@PathVariable String
+    // nombreArchivo) throws IOException {
+    // Path archivoPath = Paths.get(System.getProperty("user.dir"), "uploads",
+    // "certificados").resolve(nombreArchivo)
+    // .normalize();
+
+    // // Verificar que el archivo existe
+    // if (!Files.exists(archivoPath) || !Files.isReadable(archivoPath)) {
+    // log.warn("Certificado no encontrado o no legible: {}", archivoPath);
+    // return ResponseEntity.notFound().build();
+    // }
+
+    // Resource recurso = new UrlResource(archivoPath.toUri());
+    // return ResponseEntity.ok()
+    // .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" +
+    // nombreArchivo + "\"")
+    // .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
+    // .body(recurso);
+    // }
 
     @GetMapping("/fotos/{nombreArchivo}")
     public ResponseEntity<Resource> verFoto(@PathVariable String nombreArchivo) throws IOException {
-        Path archivoPath = Paths.get(System.getProperty("user.dir"), "uploads", "tecnicos").resolve(nombreArchivo).normalize();
+        Path archivoPath = Paths.get(System.getProperty("user.dir"), "uploads", "tecnicos").resolve(nombreArchivo)
+                .normalize();
         log.info("Solicitando foto: {} -> path={}", nombreArchivo, archivoPath.toAbsolutePath());
         if (!Files.exists(archivoPath) || !Files.isReadable(archivoPath)) {
             log.warn("Foto no encontrada o no legible: {}", archivoPath);
@@ -284,13 +332,10 @@ public class TecnicoController {
 
         model.addAttribute("tecnico", tecnico);
         model.addAttribute("servicios", servicios);
-        
-        // Obtener la categoría del técnico (asumiendo que solo tiene una)
-        if (tecnico.getCategorias() != null && !tecnico.getCategorias().isEmpty()) {
-            model.addAttribute("categoria", tecnico.getCategorias().get(0).getCategoria());
-        }
+        model.addAttribute("categorias", categoriaService.listarCategorias());
 
-        // calcular nombre de archivo de la foto y pasarlo al modelo para evitar usar funciones de Thymeleaf
+        // calcular nombre de archivo de la foto y pasarlo al modelo para evitar usar
+        // funciones de Thymeleaf
         String fotoNombre = null;
         try {
             if (tecnico.getFotoPerfil() != null && !tecnico.getFotoPerfil().isBlank()) {
@@ -307,7 +352,8 @@ public class TecnicoController {
         return "tecnico/panel";
     }
 
-    // Helper: guarda un MultipartFile en uploads/<subdir> y devuelve la ruta relativa usada en la entidad
+    // Helper: guarda un MultipartFile en uploads/<subdir> y devuelve la ruta
+    // relativa usada en la entidad
     private String saveUploadedFile(MultipartFile file, String subdir) throws IOException {
         String nombre = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         Path dir = Paths.get(System.getProperty("user.dir"), "uploads", subdir);
@@ -319,27 +365,148 @@ public class TecnicoController {
 
     // Helper: intenta resolver el Tecnico asociado al principal de forma ordenada
     private Tecnico resolveTecnicoFromPrincipal(Principal principal) {
-        if (principal == null) return null;
+        if (principal == null)
+            return null;
         String name = principal.getName();
         try {
             Tecnico t = tecnicoService.obtenerPorEmail(name);
-            if (t != null) return t;
-        } catch (Exception ignored) {}
+            if (t != null)
+                return t;
+        } catch (Exception ignored) {
+        }
 
         try {
             var usuarioOpt = usuarioService.buscarPorUsername(name);
             if (usuarioOpt.isPresent()) {
                 return tecnicoService.obtenerPorEmail(usuarioOpt.get().getEmail());
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         try {
             var usuarioPorEmail = usuarioService.buscarPorEmail(name);
             if (usuarioPorEmail.isPresent()) {
                 return tecnicoService.obtenerPorEmail(usuarioPorEmail.get().getEmail());
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return null;
     }
+
+    private void deleteFileIfExists(String path) {
+        if (path == null)
+            return;
+
+        File file = new File("uploads/" + path);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    @PostMapping("/perfil/actualizar")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<?> actualizarPerfilTecnico(
+            @RequestParam String nombres,
+            @RequestParam String apellidoPaterno,
+            @RequestParam String apellidoMaterno,
+            @RequestParam String telefono,
+            @RequestParam String correo,
+            @RequestParam("categoriaIds") List<Long> categoriaIds,
+            @RequestParam(value = "certificadoPdfFile", required = false) MultipartFile archivo,
+            @RequestParam(value = "fotoPerfilFile", required = false) MultipartFile fotoFile,
+            Principal principal) throws IOException {
+
+        String emailAuth = principal.getName();
+        log.info("Actualizando perfil técnico: {}", emailAuth);
+
+        Tecnico tecnico = tecnicoService.obtenerPorEmailODni(emailAuth);
+
+        // ===========================
+        // ✅ DATOS PERSONALES
+        // ===========================
+        tecnico.setNombres(nombres);
+        tecnico.setApellidoPaterno(apellidoPaterno);
+        tecnico.setApellidoMaterno(apellidoMaterno);
+        tecnico.setTelefono(telefono);
+
+        tecnico.getUsuario().setEmail(correo);
+        tecnico.getUsuario().setUsername(correo);
+
+        // ===========================
+        // ✅ CERTIFICADO PDF (OPCIONAL)
+        // ===========================
+        if (archivo != null && !archivo.isEmpty()) {
+            deleteFileIfExists(tecnico.getCertificadoPdf());
+            String rutaRel = saveUploadedFile(archivo, "certificados");
+            tecnico.setCertificadoPdf(rutaRel);
+            log.info("Nuevo certificado actualizado: {}", rutaRel);
+        }
+
+        // ===========================
+        // ✅ FOTO PERFIL (OPCIONAL)
+        // ===========================
+        if (fotoFile != null && !fotoFile.isEmpty()) {
+
+            String contentType = fotoFile.getContentType();
+            if (contentType == null || !(contentType.equalsIgnoreCase("image/png")
+                    || contentType.equalsIgnoreCase("image/jpeg")
+                    || contentType.equalsIgnoreCase("image/jpg"))) {
+
+                log.warn("Formato de foto inválido: {}", contentType);
+                return ResponseEntity.badRequest().body("Formato de imagen inválido");
+            }
+
+            deleteFileIfExists(tecnico.getFotoPerfil());
+
+            String rutaRel = saveUploadedFile(fotoFile, "tecnicos");
+            tecnico.setFotoPerfil(rutaRel);
+            log.info("Nueva foto actualizada: {}", rutaRel);
+        }
+
+        // ===========================
+        // ✅ ACTUALIZAR CATEGORÍAS
+        // ===========================
+        if (categoriaIds == null || categoriaIds.isEmpty()) {
+            return ResponseEntity.badRequest().body("Debe seleccionar al menos una categoría");
+        }
+
+        // var categoriasSeleccionadas = categoriaIds.stream()
+        // .map(categoriaService::buscarPorId)
+        // .filter(Optional::isPresent)
+        // .map(Optional::get)
+        // .collect(Collectors.toList());
+
+        // if (categoriasSeleccionadas.isEmpty()) {
+        // return ResponseEntity.badRequest().body("Categorías inválidas");
+        // }
+
+        // tecnico.getCategorias().clear();
+
+        tecnicoService.actualizarCategorias(tecnico, categoriaIds);
+
+        // List<TecnicoCategoria> nuevasRelaciones = new ArrayList<>();
+
+        // for (Categoria cat : categoriasSeleccionadas) {
+        // TecnicoCategoria tc = TecnicoCategoria.builder()
+        // .tecnico(tecnico)
+        // .categoria(cat)
+        // .build();
+        // tecnico.getCategorias().add(tc);
+        // }
+
+        // tecnico.getCategorias().addAll(nuevasRelaciones);
+
+        // ===========================
+        // ✅ GUARDAR EN BD
+        // ===========================
+        tecnicoRepository.save(tecnico);
+        usuarioRepository.save(tecnico.getUsuario());
+
+        log.info("Perfil técnico actualizado correctamente: {}", correo);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

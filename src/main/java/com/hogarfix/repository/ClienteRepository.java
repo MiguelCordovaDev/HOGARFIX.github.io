@@ -12,6 +12,8 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     // duplicado)
     boolean existsByUsuario_Email(String email);
 
+    boolean existsByDni(String dni);
+
     // Método para la autenticación simple
     Optional<Cliente> findByUsuario_Email(String email);
 

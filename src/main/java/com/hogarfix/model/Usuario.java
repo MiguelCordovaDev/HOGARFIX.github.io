@@ -36,6 +36,9 @@ public class Usuario extends Auditable implements UserDetails {
     @JoinColumn(name = "id_rol", referencedColumnName = "idRol")
     private Rol rol;
 
+    @OneToOne(mappedBy = "usuario")
+    private Tecnico tecnico;
+
     // 🔒 Métodos requeridos por UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -154,7 +154,16 @@
         alt="Foto técnico"
         class="w-32 h-32 rounded-full mx-auto object-cover mb-4" />
             <h3 class="text-lg font-semibold" th:text="${tecnico.nombres + ' ' + tecnico.apellidoPaterno}">Nombre Técnico</h3>
-            <p class="text-gray-500 text-sm mb-1" th:if="${tecnico.categorias != null and !#lists.isEmpty(tecnico.categorias)}" th:text="${tecnico.categorias[0].categoria.nombre}">Especialidad</p>
+            <div class="flex flex-wrap justify-center gap-2 mb-1">
+              <span th:if="${#lists.isEmpty(tecnico.categorias)}" class="text-gray-500 text-sm">
+                  Especialidad: Sin especificar
+              </span>
+
+              <span th:each="cat : ${tecnico.categorias}"
+                    class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full"
+                    th:text="${cat.categoria.nombre}">
+              </span>
+            </div>
             <p class="text-gray-500 text-sm mb-1" th:unless="${tecnico.categorias != null and !#lists.isEmpty(tecnico.categorias)}">Especialidad: Sin especificar</p>
             <p class="text-gray-500 text-sm mb-1">Ubicación: <span th:text="${tecnico.direccion.ciudad.nombre}">Ciudad</span></p>
             <p class="text-yellow-500 mb-3">

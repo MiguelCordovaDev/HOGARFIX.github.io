@@ -4,8 +4,6 @@
   <body>
     <header th:replace="~{fragments/navbar :: navbar}"></header>
 
-    
-
     <div class="container my-5">
       <h2 class="text-center mb-4">Registro de Cliente</h2>
 
@@ -15,17 +13,37 @@
         method="post"
         class="card shadow p-4"
       >
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div
+          th:if="${error}"
+          class="alert alert-danger"
+          th:text="${error}"
+        ></div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Nombres</label>
-            <input type="text" th:field="*{nombres}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="form-control" required />
+            <input
+              type="text"
+              th:field="*{nombres}"
+              pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="form-control"
+              required
+            />
             <small class="text-muted">Solo letras, mínimo 2 caracteres</small>
           </div>
           <div class="col-md-6">
             <label class="form-label">Apellido paterno</label>
-            <input type="text" th:field="*{apellidoPaterno}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="form-control" required />
+            <input
+              type="text"
+              th:field="*{apellidoPaterno}"
+              pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="form-control"
+              required
+            />
             <small class="text-muted">Solo letras, mínimo 2 caracteres</small>
           </div>
         </div>
@@ -33,12 +51,28 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Apellido materno</label>
-            <input type="text" th:field="*{apellidoMaterno}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="form-control" />
+            <input
+              type="text"
+              th:field="*{apellidoMaterno}"
+              pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="form-control"
+            />
             <small class="text-muted">Solo letras (opcional)</small>
           </div>
           <div class="col-md-6">
             <label class="form-label">DNI</label>
-            <input type="text" th:field="*{dni}" pattern="\d{8}" inputmode="numeric" minlength="8" maxlength="8" class="form-control" required />
+            <input
+              type="text"
+              th:field="*{dni}"
+              pattern="\d{8}"
+              inputmode="numeric"
+              minlength="8"
+              maxlength="8"
+              class="form-control"
+              required
+            />
             <small class="text-muted">Exactamente 8 dígitos</small>
           </div>
         </div>
@@ -46,12 +80,26 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Correo electrónico</label>
-            <input type="email" th:field="*{usuario.email}" minlength="5" maxlength="100" class="form-control" required />
+            <input
+              type="email"
+              th:field="*{usuario.email}"
+              minlength="5"
+              maxlength="100"
+              class="form-control"
+              required
+            />
             <small class="text-muted">Email válido requerido</small>
           </div>
           <div class="col-md-6">
             <label class="form-label">Contraseña</label>
-            <input type="password" th:field="*{usuario.password}" minlength="6" maxlength="100" class="form-control" required />
+            <input
+              type="password"
+              th:field="*{usuario.password}"
+              minlength="6"
+              maxlength="100"
+              class="form-control"
+              required
+            />
             <small class="text-muted">Mínimo 6 caracteres</small>
           </div>
         </div>
@@ -59,12 +107,24 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Teléfono</label>
-            <input type="tel" th:field="*{telefono}" pattern="\d{9}" inputmode="numeric" minlength="9" maxlength="9" class="form-control" />
+            <input
+              type="tel"
+              th:field="*{telefono}"
+              pattern="\d{9}"
+              inputmode="numeric"
+              minlength="9"
+              maxlength="9"
+              class="form-control"
+            />
             <small class="text-muted">Exactamente 9 dígitos</small>
           </div>
           <div class="col-md-6">
             <label class="form-label">Fecha de nacimiento</label>
-            <input type="date" th:field="*{fechaNacimiento}" class="form-control" />
+            <input
+              type="date"
+              th:field="*{fechaNacimiento}"
+              class="form-control"
+            />
           </div>
         </div>
 
@@ -72,29 +132,69 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Calle</label>
-            <input type="text" th:field="*{direccion.calle}" class="form-control" required />
+            <input
+              type="text"
+              th:field="*{direccion.calle}"
+              pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,255}"
+              minlength="2"
+              maxlength="255"
+              class="form-control"
+              required
+            />
+            <small class="text-muted">Solo letras, mínimo 2 caracteres</small>
           </div>
+
           <div class="col-md-3">
             <label class="form-label">Número</label>
-            <input type="text" th:field="*{direccion.numero}" class="form-control" />
+            <input
+              type="text"
+              th:field="*{direccion.numero}"
+              pattern="\d{1,50}"
+              inputmode="numeric"
+              maxlength="50"
+              class="form-control"
+              required
+            />
+            <small class="text-muted">Solo números</small>
           </div>
+
           <div class="col-md-3">
             <label class="form-label">Referencia</label>
-            <input type="text" th:field="*{direccion.referencia}" class="form-control" />
+            <input
+              type="text"
+              th:field="*{direccion.referencia}"
+              pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="form-control"
+            />
+            <small class="text-muted">Solo letras (opcional)</small>
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Ciudad</label>
-            <select th:field="*{direccion.ciudad.idCiudad}" class="form-control" required>
-              <option value="" disabled th:if="${#lists.isEmpty(ciudades)}">No hay ciudades</option>
-              <option th:each="c : ${ciudades}" th:value="${c.idCiudad}" th:text="${c.nombre}"></option>
+            <select
+              th:field="*{direccion.ciudad.idCiudad}"
+              class="form-control"
+              required
+            >
+              <option value="" disabled th:if="${#lists.isEmpty(ciudades)}">
+                No hay ciudades
+              </option>
+              <option
+                th:each="c : ${ciudades}"
+                th:value="${c.idCiudad}"
+                th:text="${c.nombre}"
+              ></option>
             </select>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100">Registrar Cliente</button>
+        <button type="submit" class="btn btn-success w-100">
+          Registrar Cliente
+        </button>
       </form>
     </div>
 

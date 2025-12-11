@@ -42,7 +42,7 @@ public class Cliente extends Auditable {
     @Column(length = 100)
     private String apellidoMaterno;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 20, unique = true)
     private String dni;
 
     @Column(length = 15)

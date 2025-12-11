@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.hogarfix.model.Cliente;
 import com.hogarfix.model.Rol;
+import com.hogarfix.model.Usuario;
 import com.hogarfix.repository.ClienteRepository;
 import com.hogarfix.repository.RolRepository;
 import com.hogarfix.repository.UsuarioRepository;
@@ -24,34 +25,54 @@ public class ClienteService {
     private final RolRepository rolRepository;
     private final UsuarioRepository usuarioRepository;
 
-    // Registro con validación de email duplicado
     public Cliente registrarCliente(Cliente cliente) {
         try {
-            if (clienteRepository.existsByUsuario_Email(cliente.getUsuario().getEmail())) {
-                logger.warn("Intento de registro con email duplicado: {}", cliente.getUsuario().getEmail());
+            if (cliente.getUsuario() == null || cliente.getUsuario().getEmail() == null) {
+                logger.error("Usuario o email inválido al intentar registrar cliente");
+                throw new RuntimeException("Usuario o email inválido");
+            }
+
+            String email = cliente.getUsuario().getEmail();
+            String dni = cliente.getDni();
+
+            // Validar email duplicado
+            if (clienteRepository.existsByUsuario_Email(email)) {
+                logger.warn("Intento de registro con email duplicado: {}", email);
                 throw new RuntimeException("El correo ya está registrado");
             }
 
-            // Asignar rol CLIENTE por defecto (crear si no existe)
+            // Validar DNI duplicado
+            if (clienteRepository.existsByDni(dni)) {
+                logger.warn("Intento de registro con DNI duplicado: {}", dni);
+                throw new RuntimeException("El DNI ya está registrado");
+            }
+
+            // Rol CLIENTE por defecto
             Rol rol = rolRepository.findByNombre("CLIENTE")
-                    .orElseGet(() -> rolRepository.save(Rol.builder()
-                            .nombre("CLIENTE")
-                            .descripcion("Rol por defecto para clientes")
-                            .build()));
+                    .orElseGet(() -> rolRepository.save(
+                            Rol.builder()
+                                    .nombre("CLIENTE")
+                                    .descripcion("Rol por defecto para clientes")
+                                    .build()));
 
             cliente.getUsuario().setRol(rol);
             cliente.getUsuario().setPassword(passwordEncoder.encode(cliente.getUsuario().getPassword()));
 
-            // Guardar el usuario primero para evitar TransientPropertyValueException
+            // Guardar usuario primero
             var usuarioGuardado = usuarioRepository.save(cliente.getUsuario());
             cliente.setUsuario(usuarioGuardado);
+
             Cliente clienteGuardado = clienteRepository.save(cliente);
-            
-            logger.info("Cliente registrado exitosamente en BD: email={}, id={}", cliente.getUsuario().getEmail(), clienteGuardado.getIdCliente());
+
+            logger.info("Cliente registrado exitosamente: email={}, dni={}, id={}",
+                    email, dni, clienteGuardado.getIdCliente());
+
             return clienteGuardado;
+
         } catch (Exception e) {
-            logger.error("Error al registrar cliente en BD: email={}, causa={}", 
-                cliente.getUsuario().getEmail(), e.getMessage(), e);
+            logger.error("Error al registrar cliente: email={}, causa={}",
+                    cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : "desconocido",
+                    e.getMessage(), e);
             throw e;
         }
     }
@@ -61,7 +82,7 @@ public class ClienteService {
         try {
             var resultado = clienteRepository.findByUsuario_Email(email)
                     .filter(c -> passwordEncoder.matches(password, c.getUsuario().getPassword()));
-            
+
             if (resultado.isPresent()) {
                 logger.info("Autenticación exitosa de cliente: {}", email);
             } else {
@@ -142,4 +163,35 @@ public class ClienteService {
             throw e;
         }
     }
+
+    public void actualizarCliente(Cliente cliente) {
+
+        Cliente clienteBD = clienteRepository.findById(cliente.getIdCliente())
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        Usuario usuarioBD = clienteBD.getUsuario();
+        Usuario usuarioNuevo = cliente.getUsuario();
+
+        // Actualizar email/username
+        usuarioBD.setEmail(usuarioNuevo.getEmail());
+        usuarioBD.setUsername(usuarioNuevo.getEmail());
+
+        usuarioBD.setPassword(usuarioBD.getPassword());
+
+        // Nunca aceptar el password null del formulario
+        // Si passNuevo es null o vacío: NO tocar la contraseña actual
+
+        // Actualizar datos del cliente
+        clienteBD.setNombres(cliente.getNombres());
+        clienteBD.setApellidoPaterno(cliente.getApellidoPaterno());
+        clienteBD.setApellidoMaterno(cliente.getApellidoMaterno());
+        clienteBD.setTelefono(cliente.getTelefono());
+        clienteBD.setDireccion(cliente.getDireccion());
+
+        clienteRepository.save(clienteBD);
+
+        logger.info("Cliente actualizado exitosamente: id={}, email={}",
+                clienteBD.getIdCliente(), usuarioBD.getEmail());
+    }
+
 }

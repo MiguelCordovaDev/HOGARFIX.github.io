@@ -17,7 +17,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.security.Principal;
 
@@ -57,7 +60,8 @@ public class ClienteController {
                 cliente = optByEmail.get();
             } else {
                 var optByUsername = clienteService.buscarPorUsername(name);
-                if (optByUsername.isPresent()) cliente = optByUsername.get();
+                if (optByUsername.isPresent())
+                    cliente = optByUsername.get();
             }
 
             if (cliente == null) {
@@ -65,6 +69,8 @@ public class ClienteController {
                 return "redirect:/";
             }
             model.addAttribute("cliente", cliente);
+            model.addAttribute("ciudades", ciudadService.listarCiudades());
+
             // añadir solicitudes pendientes del cliente al modelo
             try {
                 var servicios = servicioService.listarPorCliente(cliente);
@@ -76,7 +82,8 @@ public class ClienteController {
                 // no bloquear la vista por errores al recuperar servicios
                 model.addAttribute("serviciosPendientes", java.util.List.of());
             }
-            // añadir pagos pendientes del cliente al modelo (creados cuando el técnico finaliza)
+            // añadir pagos pendientes del cliente al modelo (creados cuando el técnico
+            // finaliza)
             try {
                 var pagos = pagoService.listarPorCliente(cliente);
                 var pagosPendientes = pagos.stream()
@@ -107,16 +114,19 @@ public class ClienteController {
 
     @PostMapping("/registro")
     public String registrarCliente(@ModelAttribute Cliente cliente, Model model, HttpSession session) {
-        String email = cliente != null && cliente.getUsuario() != null ? cliente.getUsuario().getEmail() : "desconocido";
+        String email = cliente != null && cliente.getUsuario() != null ? cliente.getUsuario().getEmail()
+                : "desconocido";
         logger.info("Iniciando registro de cliente: email={}", email);
-        
+
         try {
             // Aseguramos username a partir del email si no se proporcionó
-            if (cliente.getUsuario() != null && (cliente.getUsuario().getUsername() == null || cliente.getUsuario().getUsername().isEmpty())) {
+            if (cliente.getUsuario() != null
+                    && (cliente.getUsuario().getUsername() == null || cliente.getUsuario().getUsername().isEmpty())) {
                 cliente.getUsuario().setUsername(cliente.getUsuario().getEmail());
             }
 
-            // Resolver la ciudad seleccionada (el binding deja el id en direccion.ciudad.idCiudad)
+            // Resolver la ciudad seleccionada (el binding deja el id en
+            // direccion.ciudad.idCiudad)
             if (cliente.getDireccion() != null && cliente.getDireccion().getCiudad() != null) {
                 Long idCiudad = cliente.getDireccion().getCiudad().getIdCiudad();
                 if (idCiudad != null) {
@@ -142,17 +152,19 @@ public class ClienteController {
             logger.info("Cliente registrado exitosamente: email={}, id={}", email, clienteGuardado.getIdCliente());
 
             // Autenticar usando AuthenticationManager para establecer SecurityContext
-            UsernamePasswordAuthenticationToken token =
-                    new UsernamePasswordAuthenticationToken(clienteGuardado.getUsuario().getEmail(), rawPassword);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                    clienteGuardado.getUsuario().getEmail(), rawPassword);
             Authentication auth = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
             logger.info("Cliente autenticado automáticamente tras registro: email={}", email);
-            // Persist SecurityContext in HTTP session so Spring Security recognizes the login across requests
+            // Persist SecurityContext in HTTP session so Spring Security recognizes the
+            // login across requests
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             // Guardar en sesión el usuario y un nombre de visualización para la navbar
             session.setAttribute("usuarioActual", clienteGuardado.getUsuario());
-            session.setAttribute("usuarioNombre", clienteGuardado.getNombres() + " " + clienteGuardado.getApellidoPaterno());
+            session.setAttribute("usuarioNombre",
+                    clienteGuardado.getNombres() + " " + clienteGuardado.getApellidoPaterno());
 
             // Enviar email de bienvenida (EmailService maneja errores internamente)
             emailService.sendWelcomeEmail(clienteGuardado.getUsuario().getEmail(), clienteGuardado.getNombres());
@@ -166,4 +178,85 @@ public class ClienteController {
             return "cliente/registro";
         }
     }
+
+    @PostMapping("/actualizar-perfil")
+    @ResponseBody
+    public Map<String, Object> actualizarPerfil(
+            @RequestParam Long idCliente,
+            @RequestParam String nombres,
+            @RequestParam String apellidoPaterno,
+            @RequestParam String apellidoMaterno,
+            @RequestParam String telefono,
+            @RequestParam String email,
+            @RequestParam String calle,
+            @RequestParam String numero,
+            @RequestParam(required = false) String referencia,
+            @RequestParam Long ciudadId,
+            Principal principal) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Validación de sesión
+            if (principal == null) {
+                response.put("success", false);
+                response.put("message", "Sesión expirada");
+                return response;
+            }
+
+            // Obtener cliente desde BD
+            Optional<Cliente> opt = clienteService.buscarPorId(idCliente);
+            if (opt.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Cliente no encontrado");
+                return response;
+            }
+
+            Cliente cliente = opt.get();
+
+            // Validación de seguridad (solo puede editarse a sí mismo)
+            if (!principal.getName().equalsIgnoreCase(cliente.getUsuario().getEmail())) {
+                response.put("success", false);
+                response.put("message", "No autorizado");
+                return response;
+            }
+
+            // Actualizar datos
+            cliente.setNombres(nombres);
+            cliente.setApellidoPaterno(apellidoPaterno);
+            cliente.setApellidoMaterno(apellidoMaterno);
+            cliente.setTelefono(telefono);
+
+            // Actualizar usuario
+            Usuario usuario = cliente.getUsuario();
+            usuario.setEmail(email);
+            usuario.setUsername(email); // Mantener autenticación por email
+
+            cliente.getUsuario().setPassword(cliente.getUsuario().getPassword());
+            // usuario.setPassword(null);
+
+            // Actualizar dirección
+            Direccion direccion = cliente.getDireccion();
+            direccion.setCalle(calle);
+            direccion.setNumero(numero);
+            direccion.setReferencia(referencia);
+
+            // Ciudad
+            Optional<Ciudad> ciudadOpt = ciudadService.buscarPorId(ciudadId);
+            ciudadOpt.ifPresent(direccion::setCiudad);
+
+            // Guardar
+            clienteService.actualizarCliente(cliente);
+
+            response.put("success", true);
+            response.put("message", "Perfil actualizado correctamente");
+            return response;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Error inesperado al actualizar");
+            return response;
+        }
+    }
+
 }

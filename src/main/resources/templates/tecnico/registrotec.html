@@ -1,128 +1,312 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro Técnico - HogarFix</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-start bg-gray-100 pt-8">
-
-  <div class="w-full max-w-2xl mx-auto px-4">
-    <div class="mb-4">
-      <a th:href="@{/}" class="text-sm text-gray-600 hover:underline">← Volver al inicio</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro Técnico - HogarFix</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="min-h-screen flex flex-col items-center justify-start bg-gray-100 pt-8"
+  >
+    <div class="w-full max-w-2xl mx-auto px-4">
+      <div class="mb-4">
+        <a th:href="@{/}" class="text-sm text-gray-600 hover:underline"
+          >← Volver al inicio</a
+        >
+      </div>
     </div>
-  </div>
 
-  <div class="w-full max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-    <h2 class="text-2xl font-bold text-center mb-4">Registro de Técnico</h2>
+    <div class="w-full max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+      <h2 class="text-2xl font-bold text-center mb-4">Registro de Técnico</h2>
 
-    <form th:action="@{/tecnicos/registro}" th:object="${tecnico}" method="post" enctype="multipart/form-data" class="space-y-4">
-
-      <div th:if="${error}" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
-        <p th:text="${error}"></p>
-        <pre th:if="${errorDetail}" style="white-space:pre-wrap; color:#721c24; background:#f8d7da; padding:10px; border-radius:6px; overflow:auto; max-height:300px;" th:text="${errorDetail}"></pre>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Nombres</label>
-          <input type="text" th:field="*{nombres}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="w-full px-3 py-2 border rounded" required />
-          <small class="text-gray-500">Solo letras, mínimo 2 caracteres</small>
+      <form
+        th:action="@{/tecnicos/registro}"
+        th:object="${tecnico}"
+        method="post"
+        enctype="multipart/form-data"
+        class="space-y-4"
+      >
+        <div
+          th:if="${error}"
+          class="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg"
+          role="alert"
+        >
+          <p th:text="${error}"></p>
+          <pre
+            th:if="${errorDetail}"
+            style="
+              white-space: pre-wrap;
+              color: #721c24;
+              background: #f8d7da;
+              padding: 10px;
+              border-radius: 6px;
+              overflow: auto;
+              max-height: 300px;
+            "
+            th:text="${errorDetail}"
+          ></pre>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Apellido Paterno</label>
-          <input type="text" th:field="*{apellidoPaterno}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="w-full px-3 py-2 border rounded" required />
-          <small class="text-gray-500">Solo letras, mínimo 2 caracteres</small>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Apellido Materno</label>
-          <input type="text" th:field="*{apellidoMaterno}" pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}" minlength="2" maxlength="100" class="w-full px-3 py-2 border rounded" />
-          <small class="text-gray-500">Solo letras (opcional)</small>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">DNI</label>
-          <input type="text" th:field="*{dni}" pattern="\d{8}" inputmode="numeric" minlength="8" maxlength="8" class="w-full px-3 py-2 border rounded" required />
-          <small class="text-gray-500">Exactamente 8 dígitos</small>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Teléfono</label>
-          <input type="tel" th:field="*{telefono}" pattern="\d{9}" inputmode="numeric" minlength="9" maxlength="9" class="w-full px-3 py-2 border rounded" />
-          <small class="text-gray-500">Exactamente 9 dígitos</small>
-        </div>
-      </div>
 
-      <h4 class="mt-4 font-semibold">Cuenta (acceso)</h4>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-          <input type="email" th:field="*{usuario.email}" minlength="5" maxlength="100" class="w-full px-3 py-2 border rounded" required />
-          <small class="text-gray-500">Email válido requerido</small>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Nombres</label
+            >
+            <input
+              type="text"
+              th:field="*{nombres}"
+              pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="w-full px-3 py-2 border rounded"
+              required
+            />
+            <small class="text-gray-500"
+              >Solo letras, mínimo 2 caracteres</small
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Apellido Paterno</label
+            >
+            <input
+              type="text"
+              th:field="*{apellidoPaterno}"
+              pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="w-full px-3 py-2 border rounded"
+              required
+            />
+            <small class="text-gray-500"
+              >Solo letras, mínimo 2 caracteres</small
+            >
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Apellido Materno</label
+            >
+            <input
+              type="text"
+              th:field="*{apellidoMaterno}"
+              pattern="[a-zA-Z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="w-full px-3 py-2 border rounded"
+            />
+            <small class="text-gray-500">Solo letras (opcional)</small>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">DNI</label>
+            <input
+              type="text"
+              th:field="*{dni}"
+              pattern="\d{8}"
+              inputmode="numeric"
+              minlength="8"
+              maxlength="8"
+              class="w-full px-3 py-2 border rounded"
+              required
+            />
+            <small class="text-gray-500">Exactamente 8 dígitos</small>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Teléfono</label
+            >
+            <input
+              type="tel"
+              th:field="*{telefono}"
+              pattern="\d{9}"
+              inputmode="numeric"
+              minlength="9"
+              maxlength="9"
+              class="w-full px-3 py-2 border rounded"
+            />
+            <small class="text-gray-500">Exactamente 9 dígitos</small>
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-          <input type="password" th:field="*{usuario.password}" minlength="6" maxlength="100" class="w-full px-3 py-2 border rounded" required />
-          <small class="text-gray-500">Mínimo 6 caracteres</small>
+
+        <h4 class="mt-4 font-semibold">Cuenta (acceso)</h4>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Correo electrónico</label
+            >
+            <input
+              type="email"
+              th:field="*{usuario.email}"
+              minlength="5"
+              maxlength="100"
+              class="w-full px-3 py-2 border rounded"
+              required
+            />
+            <small class="text-gray-500">Email válido requerido</small>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Contraseña</label
+            >
+            <input
+              type="password"
+              th:field="*{usuario.password}"
+              minlength="6"
+              maxlength="100"
+              class="w-full px-3 py-2 border rounded"
+              required
+            />
+            <small class="text-gray-500">Mínimo 6 caracteres</small>
+          </div>
         </div>
-      </div>
 
-      <h4 class="mt-4 font-semibold">Dirección</h4>
-      <div class="grid grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Calle</label>
-          <input type="text" th:field="*{direccion.calle}" class="w-full px-3 py-2 border rounded" required />
+        <h4 class="mt-4 font-semibold">Dirección</h4>
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Calle</label>
+            <input
+              type="text"
+              th:field="*{direccion.calle}"
+              pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,255}"
+              minlength="2"
+              maxlength="255"
+              class="w-full px-3 py-2 border rounded"
+              required
+            />
+            <small class="text-gray-500"
+              >Solo letras, mínimo 2 caracteres</small
+            >
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Número</label
+            >
+            <input
+              type="text"
+              th:field="*{direccion.numero}"
+              pattern="\d{1,50}"
+              inputmode="numeric"
+              maxlength="50"
+              class="w-full px-3 py-2 border rounded"
+            />
+            <small class="text-gray-500">Solo números</small>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Referencia</label
+            >
+            <input
+              type="text"
+              th:field="*{direccion.referencia}"
+              pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,100}"
+              minlength="2"
+              maxlength="100"
+              class="w-full px-3 py-2 border rounded"
+            />
+            <small class="text-gray-500">Solo letras (opcional)</small>
+          </div>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700">Número</label>
-          <input type="text" th:field="*{direccion.numero}" class="w-full px-3 py-2 border rounded" />
+          <label class="block text-sm font-medium text-gray-700">Ciudad</label>
+          <select
+            th:field="*{direccion.ciudad.idCiudad}"
+            class="w-full px-3 py-2 border rounded"
+            required
+          >
+            <option value="" disabled>-- Seleccione ciudad --</option>
+            <option
+              th:each="c : ${ciudades}"
+              th:value="${c.idCiudad}"
+              th:text="${c.nombre}"
+            ></option>
+          </select>
         </div>
+
         <div>
-          <label class="block text-sm font-medium text-gray-700">Referencia</label>
-          <input type="text" th:field="*{direccion.referencia}" class="w-full px-3 py-2 border rounded" />
+          <label class="block text-sm font-medium text-gray-700"
+            >Categorías</label
+          >
+
+          <select
+            name="categoriaIds"
+            multiple
+            size="5"
+            class="w-full px-3 py-2 border rounded"
+            required
+          >
+            <option
+              th:each="cat : ${categorias}"
+              th:value="${cat.idCategoria}"
+              th:text="${cat.nombre}"
+              th:selected="${tecnico.categorias != null and tecnico.categorias.contains(cat)}"
+            ></option>
+          </select>
+
+          <p class="text-xs text-gray-500 mt-1">
+            Mantenga presionado CTRL (Windows) o CMD (Mac) para seleccionar
+            varias.
+          </p>
+
+          <p
+            th:if="${#lists.isEmpty(categorias)}"
+            class="text-xs text-red-600 mt-1"
+          >
+            No hay categorías disponibles. Contacte al administrador.
+          </p>
         </div>
-      </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Ciudad</label>
-        <select th:field="*{direccion.ciudad.idCiudad}" class="w-full px-3 py-2 border rounded" required>
-          <option value="" disabled>-- Seleccione ciudad --</option>
-          <option th:each="c : ${ciudades}" th:value="${c.idCiudad}" th:text="${c.nombre}"></option>
-        </select>
-      </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700"
+            >Certificado (PDF)</label
+          >
+          <!-- Usar un nombre que no colisione con la propiedad String certificadoPdf del modelo -->
+          <input
+            type="file"
+            name="certificadoPdfFile"
+            accept="application/pdf"
+            class="w-full"
+            required
+          />
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Categoría</label>
-        <select name="categoriaId" class="w-full px-3 py-2 border rounded" required>
-          <option value="" disabled th:if="${param.categoriaId == null}">-- Seleccione categoría --</option>
-    <option th:each="cat : ${categorias}"
-      th:value="${cat.idCategoria}"
-      th:text="${cat.nombre}"
-      th:selected="${param.categoriaId != null and param.categoriaId == cat.idCategoria.toString()}">
-    </option>
-        </select>
-        <p class="text-xs text-gray-500 mt-1">Seleccione una categoría (solo 1).</p>
-        <p th:if="${#lists.isEmpty(categorias)}" class="text-xs text-red-600 mt-1">No hay categorías disponibles. Contacte al administrador.</p>
-      </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700"
+            >Foto de perfil (PNG)</label
+          >
+          <input
+            type="file"
+            name="fotoPerfilFile"
+            accept="image/png, image/jpeg"
+            class="w-full"
+          />
+          <p class="text-xs text-gray-500 mt-1">
+            Formatos aceptados: PNG, JPG/JPEG. Opcional.
+          </p>
+        </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Certificado (PDF)</label>
-        <!-- Usar un nombre que no colisione con la propiedad String certificadoPdf del modelo -->
-        <input type="file" name="certificadoPdfFile" accept="application/pdf" class="w-full" required />
-      </div>
+        <div>
+          <button
+            type="submit"
+            class="w-full bg-indigo-600 text-white py-2 rounded"
+          >
+            Crear Cuenta
+          </button>
+        </div>
+      </form>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Foto de perfil (PNG)</label>
-        <input type="file" name="fotoPerfilFile" accept="image/png, image/jpeg" class="w-full" />
-        <p class="text-xs text-gray-500 mt-1">Formatos aceptados: PNG, JPG/JPEG. Opcional.</p>
-      </div>
-
-      <div>
-        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded">Crear Cuenta</button>
-      </div>
-    </form>
-
-    <p class="mt-4 text-center text-sm">¿Ya tienes cuenta? <a th:href="@{/tecnicos/login}" class="text-indigo-600">Iniciar sesión</a></p>
-  </div>
-</body>
+      <p class="mt-4 text-center text-sm">
+        ¿Ya tienes cuenta?
+        <a th:href="@{/tecnicos/login}" class="text-indigo-600"
+          >Iniciar sesión</a
+        >
+      </p>
+    </div>
+  </body>
 </html>
