@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.hogarfix.model.Cliente;
+import com.hogarfix.model.Direccion;
 import com.hogarfix.model.Rol;
 import com.hogarfix.model.Usuario;
 import com.hogarfix.repository.ClienteRepository;
@@ -164,34 +165,40 @@ public class ClienteService {
         }
     }
 
+    @Transactional
     public void actualizarCliente(Cliente cliente) {
 
         Cliente clienteBD = clienteRepository.findById(cliente.getIdCliente())
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
 
+        // --- Usuario ---
         Usuario usuarioBD = clienteBD.getUsuario();
         Usuario usuarioNuevo = cliente.getUsuario();
 
-        // Actualizar email/username
         usuarioBD.setEmail(usuarioNuevo.getEmail());
         usuarioBD.setUsername(usuarioNuevo.getEmail());
-
+        // Mantener password
         usuarioBD.setPassword(usuarioBD.getPassword());
 
-        // Nunca aceptar el password null del formulario
-        // Si passNuevo es null o vacío: NO tocar la contraseña actual
-
-        // Actualizar datos del cliente
+        // --- Cliente ---
         clienteBD.setNombres(cliente.getNombres());
         clienteBD.setApellidoPaterno(cliente.getApellidoPaterno());
         clienteBD.setApellidoMaterno(cliente.getApellidoMaterno());
         clienteBD.setTelefono(cliente.getTelefono());
-        clienteBD.setDireccion(cliente.getDireccion());
 
+        // --- Dirección (forma correcta REAL) ---
+        Direccion dirBD = clienteBD.getDireccion();
+        Direccion dirNueva = cliente.getDireccion();
+
+        dirBD.setCalle(dirNueva.getCalle());
+        dirBD.setNumero(dirNueva.getNumero());
+        dirBD.setReferencia(dirNueva.getReferencia());
+        dirBD.setCiudad(dirNueva.getCiudad());
+
+        // El save no es obligatorio en transacción, pero lo dejamos
         clienteRepository.save(clienteBD);
 
         logger.info("Cliente actualizado exitosamente: id={}, email={}",
                 clienteBD.getIdCliente(), usuarioBD.getEmail());
     }
-
 }

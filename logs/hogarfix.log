@@ -7046,3 +7046,136 @@ org.springframework.expression.spel.SpelEvaluationException: EL1007E: Property o
 2025-12-11 08:37:50.524 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
 2025-12-11 08:37:50.534 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-12-11 08:37:50.544 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-12-11 08:46:19.834 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21 with PID 20204 (D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\target\classes started by Miguel in D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io)
+2025-12-11 08:46:19.836 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-11 08:46:21.724 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-11 08:46:21.804 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1924 ms
+2025-12-11 08:46:22.578 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-11 08:46:22.720 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1041ebba
+2025-12-11 08:46:22.721 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-11 08:46:25.031 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-11 08:46:25.506 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-12-11 08:46:26.048 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-11 08:46:26.060 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 6.75 seconds (process running for 7.268)
+2025-12-11 08:46:26.207 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 08:46:26.208 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-11 08:46:26.208 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-11 08:46:26.208 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-11 08:46:26.208 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-11 08:46:26.208 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 08:46:37.802 [http-nio-8080-exec-7] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=alexmax123max@gmail.com
+2025-12-11 08:46:37.955 [http-nio-8080-exec-7] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=alexmax123max@gmail.com
+2025-12-11 08:46:37.973 [http-nio-8080-exec-7] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: alexmax123max@gmail.com
+2025-12-11 08:46:51.684 [http-nio-8080-exec-1] INFO  com.hogarfix.service.ClienteService - Cliente actualizado exitosamente: id=6, email=alexmax123max@gmail.com
+2025-12-11 09:01:05.746 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21 with PID 11976 (D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\target\classes started by Miguel in D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io)
+2025-12-11 09:01:05.747 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-11 09:01:07.596 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-11 09:01:07.681 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1892 ms
+2025-12-11 09:01:08.407 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-11 09:01:08.551 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e5c52fa
+2025-12-11 09:01:08.553 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-11 09:01:10.808 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-11 09:01:11.244 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-12-11 09:01:11.751 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-11 09:01:11.763 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 6.536 seconds (process running for 7.01)
+2025-12-11 09:01:11.907 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:01:11.907 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-11 09:01:11.907 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-11 09:01:11.907 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-11 09:01:11.908 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-11 09:01:11.908 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:02:06.256 [http-nio-8080-exec-4] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=alexmax123max@gmail.com
+2025-12-11 09:02:06.415 [http-nio-8080-exec-4] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=alexmax123max@gmail.com
+2025-12-11 09:02:06.428 [http-nio-8080-exec-4] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: alexmax123max@gmail.com
+2025-12-11 09:02:15.204 [http-nio-8080-exec-6] INFO  com.hogarfix.service.ClienteService - Cliente actualizado exitosamente: id=6, email=alexmax123max@gmail.com
+2025-12-11 09:04:30.371 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21 with PID 25264 (D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\target\classes started by Miguel in D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io)
+2025-12-11 09:04:30.373 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-11 09:04:32.306 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-11 09:04:32.388 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1975 ms
+2025-12-11 09:04:33.104 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-11 09:04:33.248 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@e5c52fa
+2025-12-11 09:04:33.249 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-11 09:04:35.409 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-11 09:04:35.836 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-12-11 09:04:36.385 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-11 09:04:36.396 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 6.543 seconds (process running for 7.004)
+2025-12-11 09:04:36.543 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:04:36.543 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-11 09:04:36.543 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-11 09:04:36.543 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-11 09:04:36.543 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-11 09:04:36.544 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:04:46.675 [http-nio-8080-exec-7] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=alexmax123max@gmail.com
+2025-12-11 09:04:46.824 [http-nio-8080-exec-7] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=alexmax123max@gmail.com
+2025-12-11 09:04:46.835 [http-nio-8080-exec-7] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: alexmax123max@gmail.com
+2025-12-11 09:04:52.722 [http-nio-8080-exec-3] INFO  com.hogarfix.service.ClienteService - Cliente actualizado exitosamente: id=6, email=alexmax123max@gmail.com
+2025-12-11 09:11:25.213 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21 with PID 8952 (D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\target\classes started by Miguel in D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io)
+2025-12-11 09:11:25.215 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-11 09:11:27.077 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-11 09:11:27.151 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1895 ms
+2025-12-11 09:11:27.849 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-11 09:11:28.016 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@34cfdd84
+2025-12-11 09:11:28.018 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-11 09:11:30.197 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-11 09:11:30.636 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-12-11 09:11:31.169 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-11 09:11:31.182 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 6.474 seconds (process running for 6.937)
+2025-12-11 09:11:31.332 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:11:31.332 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-11 09:11:31.332 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-11 09:11:31.332 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-11 09:11:31.333 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-11 09:11:31.333 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:11:45.240 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=alexmax123max@gmail.com
+2025-12-11 09:11:45.403 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=alexmax123max@gmail.com
+2025-12-11 09:11:45.413 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: alexmax123max@gmail.com
+2025-12-11 09:11:52.123 [http-nio-8080-exec-2] INFO  com.hogarfix.service.ClienteService - Cliente actualizado exitosamente: id=6, email=alexmax123max@gmail.com
+2025-12-11 09:16:37.663 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21 with PID 18464 (D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\target\classes started by Miguel in D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io)
+2025-12-11 09:16:37.666 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-11 09:16:40.524 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-11 09:16:40.717 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3012 ms
+2025-12-11 09:16:43.195 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-11 09:16:43.434 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@74d53d63
+2025-12-11 09:16:43.437 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-11 09:16:49.520 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-11 09:16:50.684 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-12-11 09:16:51.664 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-11 09:16:51.686 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 14.557 seconds (process running for 15.065)
+2025-12-11 09:16:51.991 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:16:51.992 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-11 09:16:51.992 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-11 09:16:51.992 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-11 09:16:51.993 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-11 09:16:51.993 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:17:08.809 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=alexmax123max@gmail.com
+2025-12-11 09:17:08.986 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=alexmax123max@gmail.com
+2025-12-11 09:17:09.002 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: alexmax123max@gmail.com
+2025-12-11 09:17:30.855 [http-nio-8080-exec-3] INFO  com.hogarfix.service.ClienteService - Cliente actualizado exitosamente: id=6, email=alexmax123max@gmail.com
+2025-12-11 09:21:05.359 [main] INFO  com.hogarfix.HogarFixApplication - Starting HogarFixApplication using Java 21 with PID 26760 (D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\target\classes started by Miguel in D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io)
+2025-12-11 09:21:05.363 [main] INFO  com.hogarfix.HogarFixApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-11 09:21:07.233 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-11 09:21:07.306 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1905 ms
+2025-12-11 09:21:08.044 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-11 09:21:08.189 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@30bf881e
+2025-12-11 09:21:08.190 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-11 09:21:10.401 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-11 09:21:10.830 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-12-11 09:21:11.417 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-12-11 09:21:11.431 [main] INFO  com.hogarfix.HogarFixApplication - Started HogarFixApplication in 6.589 seconds (process running for 7.063)
+2025-12-11 09:21:11.594 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:21:11.594 [main] INFO  c.h.c.ApplicationStartupListener - [OK] hogarfix lanzado exitosamente
+2025-12-11 09:21:11.594 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Perfil activo: default
+2025-12-11 09:21:11.595 [main] INFO  c.h.c.ApplicationStartupListener - [OK] Puerto: 8080
+2025-12-11 09:21:11.595 [main] INFO  c.h.c.ApplicationStartupListener - [OK] La aplicacion esta lista para recibir solicitudes
+2025-12-11 09:21:11.595 [main] INFO  c.h.c.ApplicationStartupListener - ================================================================
+2025-12-11 09:21:53.213 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=alexmax123max@gmail.com
+2025-12-11 09:21:53.364 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=alexmax123max@gmail.com
+2025-12-11 09:21:53.373 [http-nio-8080-exec-8] INFO  c.hogarfix.controller.AuthController - Cliente autenticado: alexmax123max@gmail.com
+2025-12-11 09:22:07.522 [http-nio-8080-exec-3] INFO  c.hogarfix.controller.AuthController - Intento de autenticación: usuario=miguelalex@example.com
+2025-12-11 09:22:07.609 [http-nio-8080-exec-3] INFO  c.hogarfix.controller.AuthController - Autenticación exitosa: usuario=miguelalex@example.com
+2025-12-11 09:22:07.617 [http-nio-8080-exec-3] INFO  c.hogarfix.controller.AuthController - Técnico autenticado: miguelalex@example.com
+2025-12-11 09:22:07.801 [http-nio-8080-exec-9] INFO  c.h.controller.TecnicoController - Solicitando foto: 1765435798442_perfil.png -> path=D:\UTP\Curso Integrador I\Entrega final\HOGARFIX.github.io\uploads\tecnicos\1765435798442_perfil.png
+2025-12-11 09:31:30.409 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-11 09:31:30.417 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2025-12-11 09:31:30.427 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-12-11 09:31:30.434 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

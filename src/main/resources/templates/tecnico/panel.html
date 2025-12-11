@@ -373,6 +373,53 @@
     </div>
     `,
           preConfirm: async () => {
+            const nombres = document.getElementById("nombres").value.trim();
+            const apellidoPaterno = document
+              .getElementById("apellidoPaterno")
+              .value.trim();
+            const apellidoMaterno = document
+              .getElementById("apellidoMaterno")
+              .value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+            const correo = document.getElementById("correo").value.trim();
+
+            // Expresiones Regulares
+            const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
+            const soloNumeros = /^[0-9]+$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            // Validaciones
+            if (!soloLetras.test(nombres)) {
+              Swal.showValidationMessage(
+                "El campo Nombres solo debe contener letras."
+              );
+              return false;
+            }
+            if (!soloLetras.test(apellidoPaterno)) {
+              Swal.showValidationMessage(
+                "El Apellido Paterno solo debe contener letras."
+              );
+              return false;
+            }
+            if (!soloLetras.test(apellidoMaterno)) {
+              Swal.showValidationMessage(
+                "El Apellido Materno solo debe contener letras."
+              );
+              return false;
+            }
+            if (!soloNumeros.test(telefono)) {
+              Swal.showValidationMessage(
+                "El Teléfono solo debe contener números."
+              );
+              return false;
+            }
+            if (!emailRegex.test(correo)) {
+              Swal.showValidationMessage(
+                "El correo electrónico no tiene un formato válido."
+              );
+              return false;
+            }
+
             const formData = new FormData();
 
             formData.append(

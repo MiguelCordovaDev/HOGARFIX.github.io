@@ -291,6 +291,65 @@
     </div>
     `,
           preConfirm: () => {
+            const nombres = document.getElementById("nombres").value.trim();
+            const apellidoPaterno = document
+              .getElementById("apellidoPaterno")
+              .value.trim();
+            const apellidoMaterno = document
+              .getElementById("apellidoMaterno")
+              .value.trim();
+            const telefono = document.getElementById("telefono").value.trim();
+            const calle = document.getElementById("calle").value.trim();
+            const numero = document.getElementById("numero").value.trim();
+            const referencia = document
+              .getElementById("referencia")
+              .value.trim();
+
+            const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$/;
+            const soloNumeros = /^[0-9]+$/;
+
+            // Validaciones
+            if (!soloLetras.test(nombres)) {
+              Swal.showValidationMessage(
+                "El campo Nombres solo debe contener letras."
+              );
+              return false;
+            }
+            if (!soloLetras.test(apellidoPaterno)) {
+              Swal.showValidationMessage(
+                "El Apellido Paterno solo debe contener letras."
+              );
+              return false;
+            }
+            if (!soloLetras.test(apellidoMaterno)) {
+              Swal.showValidationMessage(
+                "El Apellido Materno solo debe contener letras."
+              );
+              return false;
+            }
+            if (!soloNumeros.test(telefono)) {
+              Swal.showValidationMessage(
+                "El Teléfono solo debe contener números."
+              );
+              return false;
+            }
+            if (!soloLetras.test(calle)) {
+              Swal.showValidationMessage("La Calle solo debe contener letras.");
+              return false;
+            }
+            if (!soloNumeros.test(numero)) {
+              Swal.showValidationMessage(
+                "El Número solo debe contener números."
+              );
+              return false;
+            }
+            if (!soloLetras.test(referencia)) {
+              Swal.showValidationMessage(
+                "La Referencia solo debe contener letras."
+              );
+              return false;
+            }
+
             const formData = new FormData();
 
             formData.append(
